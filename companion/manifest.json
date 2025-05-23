@@ -1,0 +1,36 @@
+{
+	"id": "aeta-scoopy",
+	"name": "AETA Scoopy+",
+	"shortname": "AETA",
+	"description": "Control AETA Scoopy+ and compatible audio codecs",
+	"version": "1.0.0",
+	"license": "MIT",
+	"repository": "git+https://github.com/bitfocus/companion-module-aeta-scoopy.git",
+	"bugs": "https://github.com/bitfocus/companion-module-aeta-scoopy/issues",
+	"maintainers": [
+		{
+			"name": "Damien",
+			"email": "frutovor@gmail.com"
+		}
+	],
+	"runtime": {
+		"type": "node22",
+		"api": "nodejs-ipc",
+		"apiVersion": "0.0.0",
+		"entrypoint": "../main.js"
+	},
+	"legacyIds": [],
+	"manufacturer": "AETA",
+	"products": [
+		"Scoopy+",
+		"Scoop5S",
+		"ScoopFone HD",
+		"ScoopTeam"
+	],
+	"keywords": [
+		"Audio Codec",
+		"Broadcast",
+		"SIP",
+		"VoIP"
+	]
+}
