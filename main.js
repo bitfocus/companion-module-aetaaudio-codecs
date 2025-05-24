@@ -615,7 +615,7 @@ class AETAModule extends InstanceBase {
               '3': 'Analog (Hybrid)',
               '4': 'Mobile Voice',
               '5': 'IP',
-              '6': 'Mobile IP',
+              //'6': 'Mobile IP',
             };
             this.setVariableValues({ networkType: types[value] || `Unknown (${value})` });
             break;
