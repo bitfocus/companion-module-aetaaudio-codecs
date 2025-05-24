@@ -58,7 +58,6 @@ module.exports = {
 		{ variableId: 'activeAlarms', name: 'Active Alarms' },
 		{ variableId: 'lastError', name: 'Last Error Message' },
 		{ variableId: 'audioStatus', name: 'Audio Status' },
-		{ variableId: 'networkQuality', name: 'Network Quality' },
 		{ variableId: 'jitterBuffer', name: 'Jitter Buffer Status' },
 		{ variableId: 'audioLevel', name: 'Audio Level' },
 		{ variableId: 'lastConnectedNumber', name: 'Last Connected Number' }
@@ -122,7 +121,6 @@ module.exports = {
 		activeAlarms: 'None',
 		lastError: '',
 		audioStatus: 'Unknown',
-		networkQuality: 'Unknown',
 		jitterBuffer: '0',
 		audioLevel: '0'
 	  });

@@ -2,6 +2,8 @@
 
 A Bitfocus Companion module for controlling AETA Scoopy+ and compatible audio codecs via the AARC protocol.
 
+**Protocol from AETA is included for reference.**
+
 ## Features
 
 - **Call Control:** Dial numbers or SIP URIs, hang up, and monitor call status (ringing, calling, established, released).
