@@ -1,0 +1,1591 @@
+[
+  {
+    "command": "ATE",
+    "description": "Local echo control.",
+    "password_sensitive": false,
+    "applicable_units": ["all units"],
+    "format": "ATE[n]",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Local echo status.",
+        "values": [
+          {"value": 1, "description": "local echo active (default)"},
+          {"value": 0, "description": "no local echo"}
+        ]
+      }
+    ],
+    "notes": ["ATE0 switches off the local echo."],
+    "examples": []
+  },
+  {
+    "command": "ATI",
+    "description": "Equipment identification.",
+    "password_sensitive": false,
+    "applicable_units": ["all units"],
+    "format": "ATI[n]",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Identification level.",
+        "values": [
+          {"value": 0, "description": "Product identification (default)"},
+          {"value": 1, "description": "ISDN interface board version number (HS3 / S3)"},
+          {"value": 2, "description": "Codec board software version numbers; Global software version (S4/S+)"}
+        ]
+      }
+    ],
+    "examples": [
+      "ATI\nSCOOP4+\nOK",
+      "ATI1\nS0 -- V 5.06 -\nOK",
+      "ATI2\nV8.01 3.12\nOK"
+    ]
+  },
+  {
+    "command": "ATZ",
+    "description": "Resets the device.",
+    "password_sensitive": false,
+    "applicable_units": ["all units"],
+    "format": "ATZ",
+    "response": "OK (transmitted before reboot, control session is closed)",
+    "notes": ["Because of the reboot, the control session is closed after this command!"],
+    "examples": []
+  },
+  {
+    "command": "AT#H",
+    "description": "On line help.",
+    "password_sensitive": false,
+    "applicable_units": ["HS3", "S3"],
+    "format": "AT#H, AT#H0, AT#H1, AT#H2, AT#H3, AT#H4",
+    "notes": [
+      "AT#H, AT#H0, AT#H1 display the first help screen.",
+      "AT#H2, AT#H3, AT#H4 display other help screens."
+    ],
+    "examples": []
+  },
+  {
+    "command": "AT#PWD",
+    "description": "Opening of a control session.",
+    "password_sensitive": false,
+    "applicable_units": ["all units"],
+    "format": "AT#PWD=password",
+    "parameters": [
+      {
+        "name": "password",
+        "type": "string",
+        "description": "Control session password.",
+        "notes": ["Maximum 8 numerical characters.", "Factory setting is 'blank' (no password)."]
+      }
+    ],
+    "examples": []
+  },
+  {
+    "command": "AT#EXI",
+    "description": "Closure of a control session (previously opened by entering the password with AT#PWD).",
+    "password_sensitive": false,
+    "applicable_units": ["all units"],
+    "format": "AT#EXI",
+    "examples": []
+  },
+  {
+    "command": "AT#NPW",
+    "description": "New password programming.",
+    "password_sensitive": false,
+    "applicable_units": ["all units"],
+    "format": "AT#NPW=new_password",
+    "parameters": [
+      {
+        "name": "new_password",
+        "type": "string",
+        "description": "New password.",
+        "notes": ["Maximum 8 numerical characters."]
+      }
+    ],
+    "examples": []
+  },
+  {
+    "command": "AT#NET",
+    "description": "Allows the selection of the active transmission interface.",
+    "password_sensitive": false,
+    "applicable_units": ["all units"],
+    "format": "AT#NET=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Transmission interface.",
+        "values": [
+          {"value": 0, "description": "ISDN interface"},
+          {"value": 1, "description": "Leased line interface (not allowed for S3, HS3)"},
+          {"value": 2, "description": "Analog line: Codec mode (S+, Scoopy+ S)"},
+          {"value": 3, "description": "Analog line: Hybrid mode (not allowed for S3, HS3)"},
+          {"value": 4, "description": "Mobile voice interface (not allowed for S3, HS3)"},
+          {"value": 5, "description": "IP interface (2G/3G/3G+/4G)"},
+          {"value": 6, "description": "Mobile IP (S+, S4, S5, SxS)"}
+        ]
+      }
+    ],
+    "examples": ["AT#NET=0\nOK"],
+    "display_command": "AT&V, AT&V0"
+  },
+  {
+    "command": "AT#DIA",
+    "description": "Configuration of the dial method.",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "S4", "S5", "SxS"],
+    "format": "AT#DIA=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Dial method.",
+        "values": [
+          {"value": 0, "description": "Tone"},
+          {"value": 1, "description": "Pulse"}
+        ]
+      }
+    ],
+    "examples": []
+  },
+  {
+    "command": "AT#TON",
+    "description": "Selection of the dial tone.",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "S4", "S5", "SxS"],
+    "format": "AT#TON=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Dial tone setting.",
+        "values": [
+          {"value": 0, "description": "Detect"},
+          {"value": 1, "description": "Do not wait for dial tone"}
+        ]
+      }
+    ],
+    "examples": []
+  },
+  {
+    "command": "AT#NUM",
+    "description": "Remote party identifier for an outgoing call: dial number and sub-address programming (ISDN mode), dial number (POTS mode, GSM mode), IP address or SIP URI (IP mode).",
+    "password_sensitive": false,
+    "applicable_units": ["all units"],
+    "format": {
+      "ISDN": "AT&Zn=nnn[*sss], or AT#NUMn=nnn[*sss]",
+      "POTS_Mobile_Voice": "AT&Z1=nnn, or AT#NUM1=nnn",
+      "IP_Direct_IP": "AT&Z1=n.p.q.r, or AT#NUM1= n.p.q.r",
+      "IP_SIP_URI": "AT&Z1=user@server, or AT#NUM1= user@server"
+    },
+    "parameters": [
+      {
+        "name": "n (ISDN)",
+        "type": "integer",
+        "description": "Index of the number to be entered.",
+        "values": [
+          {"value": "1-6", "description": "single codec mode"},
+          {"value": 7, "description": "1st codec in dual codec mode"},
+          {"value": 8, "description": "2nd codec in dual codec mode (or mobile voice coordination channel on S+)"}
+        ]
+      },
+      {
+        "name": "nnn (ISDN/POTS/Mobile Voice)",
+        "type": "string",
+        "description": "ISDN/dial number.",
+        "notes": ["40 digits maximum"]
+      },
+      {
+        "name": "sss (ISDN)",
+        "type": "string",
+        "description": "Sub-address (optional).",
+        "notes": ["4 digits maximum"]
+      },
+      {
+        "name": "n.p.q.r (IP)",
+        "type": "string",
+        "description": "IP address in decimal format.",
+        "example": "192.168.120.23"
+      },
+      {
+        "name": "user@server (IP)",
+        "type": "string",
+        "description": "SIP URI.",
+        "notes": ["user is a valid identifier on a SIP server.", "server is the IP address or domain name of a SIP server.", "40 digits maximum for user@server."]
+      }
+    ],
+    "notes": [
+      "Separate numbers are allocated for single or dual codec modes (ISDN).",
+      "Numbers may or may not be linked to configuration memories (see AT#NAC command).",
+      "Each B channel is allocated a dial number in ISDN mode."
+    ],
+    "display_command": "AT&V, AT&V0"
+  },
+  {
+    "command": "AT#LOC",
+    "description": "Local number and sub-address programming.",
+    "password_sensitive": false,
+    "applicable_units": ["all units (ISDN mode)"],
+    "format": "AT#LOCn=nnn[*sss]",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Index of the number to be entered.",
+        "values": [
+          {"value": "1-6", "description": "single codec mode"},
+          {"value": 7, "description": "1st codec in dual codec mode"},
+          {"value": 8, "description": "2nd codec in dual codec mode (not relevant for mobile voice coordination channel on S+)"}
+        ]
+      },
+      {
+        "name": "nnn",
+        "type": "string",
+        "description": "Local ISDN number.",
+        "notes": ["40 digits maximum"]
+      },
+      {
+        "name": "sss",
+        "type": "string",
+        "description": "Local sub-address (optional).",
+        "notes": ["4 digits maximum"]
+      }
+    ],
+    "display_command": "AT&V, AT&V0"
+  },
+  {
+    "command": "ATDS",
+    "description": "Call initiating (ISDN mode, IP mode). Triggers a call to the destination specified by AT&Zn or AT#NUMn.",
+    "password_sensitive": false,
+    "applicable_units": ["all units"],
+    "format": "ATDS[n]",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Index of the concerned codec.",
+        "values": [
+          {"value": 1, "description": "Default, or codec 1 in dual codec mode"},
+          {"value": 2, "description": "Codec 2 in dual codec mode (HS3 / S3 / S4 / S5 / Scoop5 S), or mobile voice coordination channel for S+ / Scoopy+ S."}
+        ]
+      }
+    ],
+    "examples": [
+      "ATDS (initiate a call (on codec 1 if in dual codec mode))",
+      "ATDS2 (initiate a call from codec 2 (in dual ISDN codec mode))"
+    ]
+  },
+  {
+    "command": "ATH",
+    "description": "Link termination (any mode except LL).",
+    "password_sensitive": false,
+    "applicable_units": ["all units"],
+    "format": "ATH[n]",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Index of the communication link to terminate.",
+        "default": 1
+      }
+    ],
+    "examples": []
+  },
+  {
+    "command": "AT#AUTO",
+    "description": "Allows the selection of the automatic answering mode.",
+    "password_sensitive": false,
+    "applicable_units": ["HS3", "S3"],
+    "format": "AT#AUTOi=n",
+    "parameters": [
+      {
+        "name": "i",
+        "type": "integer",
+        "description": "Codec selection.",
+        "values": [
+          {"value": 0, "description": "codecs 1 & 2"},
+          {"value": 1, "description": "codec 1"},
+          {"value": 2, "description": "codec 2"}
+        ]
+      },
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Answering mode.",
+        "values": [
+          {"value": 0, "description": "Manual answering"},
+          {"value": 1, "description": "Automatic answering"}
+        ]
+      }
+    ],
+    "examples": ["AT#AUTO1=1\nOK"],
+    "display_command": "AT&V, AT&V0"
+  },
+  {
+    "command": "ATA",
+    "description": "Accept an incoming call.",
+    "password_sensitive": false,
+    "applicable_units": ["HS3", "S3"],
+    "format": "ATAn",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Index of the link to accept.",
+        "values": [1, 2]
+      }
+    ],
+    "examples": []
+  },
+  {
+    "command": "AT#TAE",
+    "description": "Allows the user to filter ISDN calls depending on their nature.",
+    "password_sensitive": false,
+    "applicable_units": ["all units"],
+    "format": "AT#TAE=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Call filtering mode.",
+        "values": [
+          {"value": 0, "description": "Any incoming call is accepted"},
+          {"value": 1, "description": "Only 'telephone' type calls are accepted"},
+          {"value": 2, "description": "Only 'data' type calls are accepted (recommended mode when it is not intended to receive calls from normal telephones)"}
+        ]
+      }
+    ],
+    "examples": ["AT#TAE=2\nOK"],
+    "display_command": "AT&V9"
+  },
+  {
+    "command": "AT#TFS",
+    "description": "Enables a «proprietary» filtering mode on incoming ISDN calls, based on sub-address values. In this mode, the local sub-address behaves like a password for incoming calls.",
+    "password_sensitive": false,
+    "applicable_units": ["HS3", "S3"],
+    "format": "AT#TFS=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Filtering mode.",
+        "values": [
+          {"value": 0, "description": "Standard mode"},
+          {"value": 1, "description": "Proprietary filtering mode"}
+        ]
+      }
+    ],
+    "examples": ["AT#TFS=1\nOK"],
+    "display_command": "AT&V9"
+  },
+  {
+    "command": "AT#HLC",
+    "description": "Enables coding of HLC (High Layer Capability) information element in outgoing ISDN calls. This parameter should usually stay equal to zero. However, some international calls may require the encoding of this parameter.",
+    "password_sensitive": false,
+    "applicable_units": ["HS3", "S3"],
+    "format": "AT#HLC=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "HLC encoding.",
+        "values": [
+          {"value": 0, "description": "No (default)"},
+          {"value": 1, "description": "Yes"}
+        ]
+      }
+    ],
+    "examples": ["AT#HLC=1\nOK"],
+    "display_command": "AT&V9"
+  },
+  {
+    "command": "AT#RED",
+    "description": "Activation of auto redialling feature (recall destination in case of loss of link).",
+    "password_sensitive": false,
+    "applicable_units": ["S4", "S5", "S+", "SxS"],
+    "format": "AT#REDi=n",
+    "parameters": [
+      {
+        "name": "i",
+        "type": "integer",
+        "description": "Codec selection.",
+        "values": [
+          {"value": 1, "description": "codec 1"},
+          {"value": 2, "description": "codec 2"}
+        ]
+      },
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Redial status.",
+        "values": [
+          {"value": 0, "description": "Normal mode (default)"},
+          {"value": 1, "description": "Redial active"}
+        ]
+      }
+    ],
+    "examples": ["AT#RED1=1\nOK"],
+    "display_command": "AT&V0"
+  },
+  {
+    "command": "AT#NBR",
+    "description": "Number of retries for redialling feature.",
+    "password_sensitive": false,
+    "applicable_units": ["S4", "S5", "S+", "SxS"],
+    "format": "AT#NBR=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Number of (unsuccessful) trials before giving up.",
+        "values": [
+          {"value": 0, "description": "no limit, infinite retry"},
+          {"value": "1-20", "description": "number of trials (default 1)"}
+        ]
+      }
+    ],
+    "examples": ["AT#NBR=6\nOK"],
+    "display_command": "AT&V9"
+  },
+  {
+    "command": "AT#TTR",
+    "description": "Time to wait before redial redialling.",
+    "password_sensitive": false,
+    "applicable_units": ["S4", "S5", "S+", "SxS"],
+    "format": "AT#TTR=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Time in seconds before new redialing attempt.",
+        "values": ["1-30"],
+        "default": 1
+      }
+    ],
+    "examples": ["AT#TTR=10\nOK"],
+    "display_command": "AT&V9"
+  },
+  {
+    "command": "AT#LCT",
+    "description": "Use of loop control feature.",
+    "password_sensitive": false,
+    "applicable_units": ["S4", "S5", "Scoop5 S", "Scoop5 S-IP"],
+    "format": "AT#LCT=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Loop control status.",
+        "values": [
+          {"value": 0, "description": "Disabled (default, no loop control)"},
+          {"value": 1, "description": "Active (outgoing links controlled by loop)"},
+          {"value": 2, "description": "Active, loop switches to backup mode"}
+        ]
+      }
+    ],
+    "examples": ["AT#LCT=1\nOK"],
+    "display_command": "AT&V0"
+  },
+  {
+    "command": "AT#LLBC",
+    "description": "Selection of network for backup call (in relation with loop controlled backup).",
+    "password_sensitive": false,
+    "applicable_units": ["S4", "S5", "SxS"],
+    "format": "AT#LLBC=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Backup call network.",
+        "values": [
+          {"value": 0, "description": "ISDN backup call triggered via loop control"},
+          {"value": 5, "description": "IP backup call triggered via loop control"}
+        ]
+      }
+    ],
+    "examples": ["AT#LLBC=5\nOK"],
+    "display_command": "AT&V0"
+  },
+  {
+    "command": "AT#LLBR",
+    "description": "Activate “passive” backup mode (switch to backup on receiving an ISDN or IP call).",
+    "password_sensitive": false,
+    "applicable_units": ["S4", "S5", "SxS"],
+    "format": "AT#LLBR=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Passive backup mode status.",
+        "values": [
+          {"value": 0, "description": "Inactive (default, IP or ISDN incoming call ignored when in LL mode)"},
+          {"value": 1, "description": "Active (accept and switch to backup on receiving an IP or ISDN call)"}
+        ]
+      }
+    ],
+    "examples": ["AT#LLBR=0\nOK"],
+    "display_command": "AT&V0"
+  },
+  {
+    "command": "AT#DHCP",
+    "description": "IP addressing mode.",
+    "password_sensitive": false,
+    "applicable_units": ["S4", "S5", "S+", "SxS"],
+    "format": "AT#DHCP=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "DHCP mode.",
+        "values": [
+          {"value": 0, "description": "use DHCP (default)"},
+          {"value": 1, "description": "static mode"}
+        ]
+      }
+    ],
+    "examples": ["AT#DHCP=0\nOK"],
+    "display_command": "AT&V9"
+  },
+  {
+    "command": "AT#IP",
+    "description": "Static IP address setting (valid when DHCP is not used).",
+    "password_sensitive": false,
+    "applicable_units": ["S4", "S5", "S+", "SxS"],
+    "format": "AT#IP=n.p.q.r",
+    "parameters": [
+      {
+        "name": "n.p.q.r",
+        "type": "string",
+        "description": "Static IP address."
+      }
+    ],
+    "examples": ["AT#IP=10.0.58.125\nOK"],
+    "display_command": "AT&V9"
+  },
+  {
+    "command": "AT#IPM",
+    "description": "Sub-network mask (valid when DHCP is not used).",
+    "password_sensitive": false,
+    "applicable_units": ["S4", "S5", "S+", "SxS"],
+    "format": "AT#IPM=n.p.q.r",
+    "parameters": [
+      {
+        "name": "n.p.q.r",
+        "type": "string",
+        "description": "Sub-network mask."
+      }
+    ],
+    "examples": ["AT#IPM=255.255.255.0\nOK"],
+    "display_command": "AT&V9"
+  },
+  {
+    "command": "AT#GW",
+    "description": "Default gateway address (valid when DHCP is not used).",
+    "password_sensitive": false,
+    "applicable_units": ["S4", "S5", "S+", "SxS"],
+    "format": "AT#GW=n.p.q.r",
+    "parameters": [
+      {
+        "name": "n.p.q.r",
+        "type": "string",
+        "description": "Gateway IP address."
+      }
+    ],
+    "examples": ["AT#GW=10.0.58.254\nOK"],
+    "display_command": "AT&V9"
+  },
+  {
+    "command": "AT#DNS",
+    "description": "DNS address (valid when DHCP is not used).",
+    "password_sensitive": false,
+    "applicable_units": ["S4", "S5", "S+", "SxS"],
+    "format": "AT#DNS=n.p.q.r",
+    "parameters": [
+      {
+        "name": "n.p.q.r",
+        "type": "string",
+        "description": "DNS IP address."
+      }
+    ],
+    "examples": ["AT#DNS=10.15.58.2\nOK"],
+    "display_command": "AT&V9"
+  },
+  {
+    "command": "AT#IPQ",
+    "description": "IP network quality setting.",
+    "password_sensitive": false,
+    "applicable_units": ["S4", "S5", "S+", "SxS"],
+    "format": "AT#IPQ=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "IP network quality.",
+        "values": [
+          {"value": 0, "description": "low quality"},
+          {"value": 1, "description": "middle quality (default)"},
+          {"value": 2, "description": "high quality"},
+          {"value": 3, "description": "bad quality"},
+          {"value": 4, "description": "very bad quality"},
+          {"value": 5, "description": "very high quality"}
+        ]
+      }
+    ],
+    "examples": ["AT#IPQ=1\nOK"],
+    "display_command": "AT&V9"
+  },
+  {
+    "command": "AT#VISU",
+    "description": "Configure the periodic sending of measured audio levels to a codec management server. The messages are sent unsolicited at regular time intervals.",
+    "password_sensitive": false,
+    "applicable_units": ["S4", "S5", "S+", "SxS"],
+    "format": "AT#VISU=n.p.q.r:port period",
+    "parameters": [
+      {
+        "name": "n.p.q.r",
+        "type": "string",
+        "description": "IP address of the codec management server."
+      },
+      {
+        "name": "port",
+        "type": "integer",
+        "description": "UDP port number on the management server."
+      },
+      {
+        "name": "period",
+        "type": "integer",
+        "description": "Time interval in ms.",
+        "notes": ["Multiple of 50, minimum 150."]
+      }
+    ],
+    "notes": ["The message is sent using UDP."],
+    "examples": ["AT#VISU=10.0.20.55:8010 500 OK (send every 500 ms to port 8010 of IP 10.0.20.55)"],
+    "display_command": "None"
+  },
+  {
+    "command": "AT#REP",
+    "description": "Activation and configuration of the packet replication feature (IP modes).",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "S5", "SxS"],
+    "format": "AT#REP=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Packet replication mode.",
+        "values": [
+          {"value": 0, "description": "Normal mode, no packet replication"},
+          {"value": 1, "description": "Every packet is sent twice"},
+          {"value": 2, "description": "Every packet sent twice, with interleaving"}
+        ]
+      }
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#SEL",
+    "description": "Selection of the single or dual codec mode (LL or ISDN mode).",
+    "password_sensitive": false,
+    "applicable_units": ["HS3", "S3", "S4", "S5", "Scoop5 S"],
+    "format": "AT#SEL=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Codec mode.",
+        "values": [
+          {"value": 0, "description": "single codec mode"},
+          {"value": 1, "description": "dual codec mode"}
+        ]
+      }
+    ],
+    "notes": ["This command may induce a modification of the coding type, as only G711 and G722 algorithms are available in dual codec mode."],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#SELIP",
+    "description": "Selection of the single or dual codec mode (IP mode).",
+    "password_sensitive": false,
+    "applicable_units": ["Scoop5 S"],
+    "format": "AT#SELIP=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Codec mode.",
+        "values": [
+          {"value": 0, "description": "single codec mode"},
+          {"value": 1, "description": "dual codec mode"}
+        ]
+      }
+    ],
+    "notes": ["This command may induce a modification of the coding type."],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#COD",
+    "description": "Selection of the coding algorithm. Available options depend on the AT#SEL command.",
+    "password_sensitive": false,
+    "applicable_units": ["all units"],
+    "format": "AT#CODi=n",
+    "parameters": [
+      {
+        "name": "i",
+        "type": "integer",
+        "description": "Codec selection.",
+        "values": [
+          {"value": 1, "description": "codec 1"},
+          {"value": 2, "description": "codec 2 (not allowed for S+ / Scoopy+ S)"}
+        ]
+      },
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Coding algorithm.",
+        "values": [
+          {"value": 0, "description": "G722 - H242 (mono)"},
+          {"value": 1, "description": "G711 (mono)"},
+          {"value": 2, "description": "MPEG Layer 2 (J52 for ISDN mode) - Mono"},
+          {"value": 3, "description": "MPEG Layer 2 (J52 for ISDN mode) – Dual mono"},
+          {"value": 4, "description": "MPEG Layer 2 (J52 for ISDN mode) - Stereo"},
+          {"value": 5, "description": "MPEG Layer 2 (J52 for ISDN mode) – Joint stereo"},
+          {"value": 7, "description": "G722 – SRT (or G722 for IP mode)"},
+          {"value": 8, "description": "G722 – H221"},
+          {"value": 9, "description": "4SB ADPCM - Mono"},
+          {"value": 10, "description": "4SB ADPCM – Stereo"},
+          {"value": 12, "description": "TDAC"},
+          {"value": 15, "description": "MPEG Layer 3 (J52 for ISDN mode) – Mono"},
+          {"value": 16, "description": "MPEG Layer 3 (J52 for ISDN mode) - Dual mono"},
+          {"value": 17, "description": "MPEG Layer 3 (J52 for ISDN mode) - Stereo"},
+          {"value": 18, "description": "MPEG Layer 3 (J52 for ISDN mode) – Joint stereo"},
+          {"value": 19, "description": "MPEG Layer 2 (Proprietary) – Mono (not used for IP mode)"},
+          {"value": 20, "description": "MPEG Layer 2 (Proprietary) – Dual mono (not used for IP mode)"},
+          {"value": 21, "description": "MPEG Layer 2 (Proprietary) - Stereo (not used for IP mode)"},
+          {"value": 22, "description": "MPEG Layer 2 (Proprietary) – Joint stereo (not used for IP mode)"},
+          {"value": 23, "description": "G722 encoding / TDAC decoding"},
+          {"value": 24, "description": "TDAC encoding / G722 decoding"},
+          {"value": 25, "description": "MPEG Layer 3 (Proprietary) - Mono (not used for IP mode)"},
+          {"value": 26, "description": "MPEG Layer 3 (Proprietary) – Dual mono (not used for IP mode)"},
+          {"value": 27, "description": "MPEG Layer 3 (Proprietary) - Stereo (not used for IP mode)"},
+          {"value": 28, "description": "MPEG Layer 3 (Proprietary) – Joint stereo (not used for IP mode)"},
+          {"value": 30, "description": "CELP (S+ / Scoopy+ S)"},
+          {"value": 31, "description": "Hybrid mode (analog line) (not allowed for S3, HS3)"},
+          {"value": 32, "description": "MPEG AAC-LC – Mono"},
+          {"value": 33, "description": "MPEG AAC-LC - Dual mono (reserved but actually not used)"},
+          {"value": 34, "description": "MPEG AAC-LC - Stereo"},
+          {"value": 35, "description": "MPEG AAC-LC – Joint stereo (reserved but actually not used)"},
+          {"value": 36, "description": "MPEG HE-AAC - Mono"},
+          {"value": 38, "description": "MPEG HE-AAC - Stereo"},
+          {"value": 42, "description": "MPEG HE-AAC v2 (Stereo by design)"},
+          {"value": 50, "description": "OPUS – Mono (SxS)"},
+          {"value": 51, "description": "OPUS – Stereo (SxS)"},
+          {"value": 62, "description": "MPEG AAC-LC-LOAS - Mono"},
+          {"value": 63, "description": "MPEG AAC-LC-LOAS - Dual mono (reserved but actually not used)"},
+          {"value": 64, "description": "MPEG AAC-LC-LOAS - Stereo"},
+          {"value": 65, "description": "MPEG AAC-LC-LOAS - Joint stereo (reserved but actually not used)"},
+          {"value": 66, "description": "MPEG HE-AAC-LOAS - Mono"},
+          {"value": 68, "description": "MPEG HE-AAC-LOAS - Stereo"},
+          {"value": 72, "description": "MPEG HE-AAC v2-LOAS (Stereo by design)"},
+          {"value": 100, "description": "L16 – Mono (SxS)"},
+          {"value": 101, "description": "L16 – Stereo (SxS)"},
+          {"value": 102, "description": "L20 – Mono (SxS)"},
+          {"value": 103, "description": "L20 – Stereo (SxS)"},
+          {"value": 104, "description": "L24 – Mono (SxS)"},
+          {"value": 105, "description": "L24 – Stereo (SxS)"}
+        ]
+      }
+    ],
+    "notes": [
+      "This command may induce a change in the codec bit rate if its value is not consistent with the new algorithm selected.",
+      "The proprietary MPEG Layer 2 mode is compatible with CCS codecs.",
+      "The MPEG Layer 3 modes are obsolete (only older products).",
+      "Modes including the TDAC algorithm are only available optionally on the device."
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#FRE",
+    "description": "Selection of the coding sampling rate. Only needed for MPEG algorithms and linear coding (L16/L20/L24), as the sampling rate is fixed for other algorithms.",
+    "password_sensitive": false,
+    "applicable_units": ["all units"],
+    "format": "AT#FRE=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Sampling rate.",
+        "values": [
+          {"value": 0, "description": "48 kHz"},
+          {"value": 1, "description": "32 kHz"},
+          {"value": 2, "description": "24 kHz (not valid for MPEG-AAC and linear coding)"},
+          {"value": 3, "description": "16 kHz (not valid for MPEG-AAC and linear coding)"}
+        ]
+      }
+    ],
+    "notes": [
+      "As the configuration must remain consistent after any AT command, AT#FRE command should not be sent when the algorithm is not MPEG.",
+      "In such case, the value returned by configuration display commands (see AT&V1) is meaningless."
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#CHD",
+    "description": "Selection of the codec bit rate and hence desired number of B channels.",
+    "password_sensitive": false,
+    "applicable_units": ["all units"],
+    "format": "AT#CHDi=d",
+    "parameters": [
+      {
+        "name": "i",
+        "type": "integer",
+        "description": "Codec selection.",
+        "values": [
+          {"value": 1, "description": "codec 1"},
+          {"value": 2, "description": "codec 2 (not allowed for S+ and Scoopy+ S)"}
+        ]
+      },
+      {
+        "name": "d",
+        "type": "integer",
+        "description": "Bit rate in kbit/s."
+      }
+    ],
+    "notes": [
+      "This command is needed if and only if the algorithm is: MPEG (any variation), OPUS, CELP in case of AT#NET=2 (Analog Line: Codec mode). Other cases have a fixed (implicit) bit rate for each algorithm/channel mode combination (AT#COD parameter value). However, in such case, the possible command is accepted and returns OK if the parameter is valid (only one valid value).",
+      "In case of AT#NET=2 (Analog Line: Codec mode), the bit rate is truncated (in comparison with the real bit rate): d=12: 12 kbits/s, =14: 14.4 kbits/s, =16: 16.8 kbits/s, =19: 19.2 kbits/s, =21: 21.6 kbits/s, =24: 24 kbits/s.",
+      "For MPEG-AAC in case of AT#NET=2 (IP mode), the bit rate is also truncated for non integer values. Possible values: 16, 20, 24, 32, 40, 48, 56, 64, 96, 128, 192, 256.",
+      "For OPUS, the bit rate is the “start value” used at the beginning of the link; it can change during the transmission (if negotiated by the units)."
+    ],
+    "examples": ["AT#CHD1=128 (Codec configured at 128 kbit/s)"],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#ORI",
+    "description": "Configuration of the Original/Copy field (MPEG only).",
+    "password_sensitive": false,
+    "applicable_units": ["HS3", "S3"],
+    "format": "AT#ORI=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Original/Copy setting.",
+        "values": [
+          {"value": 0, "description": "Original"},
+          {"value": 1, "description": "Copy"}
+        ]
+      }
+    ],
+    "examples": []
+  },
+  {
+    "command": "AT#COP",
+    "description": "Configuration of the Copyright field (MPEG only).",
+    "password_sensitive": false,
+    "applicable_units": ["HS3", "S3"],
+    "format": "AT#COP=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Copyright setting.",
+        "values": [
+          {"value": 0, "description": "Active"},
+          {"value": 1, "description": "Inactive"}
+        ]
+      }
+    ],
+    "examples": []
+  },
+  {
+    "command": "AT#COR",
+    "description": "Selection of the error correction mode (MPEG only), or Selection of the protected mode (Analog line: CELP Codec Mode).",
+    "password_sensitive": false,
+    "applicable_units": ["all units"],
+    "format": "AT#COR=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Error correction/protected mode.",
+        "values": [
+          {"value": 0, "description": "mode 0"},
+          {"value": 1, "description": "mode 1"},
+          {"value": 2, "description": "mode 2"},
+          {"value": 3, "description": "mode 3 (not allowed in Analog line / CELP Codec Mode)"}
+        ]
+      }
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#CLK",
+    "description": "Configuration of the clock mode (POTS mode).",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "S5", "SxS"],
+    "format": "AT#CLK=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Clock mode.",
+        "values": [
+          {"value": 0, "description": "Standard"},
+          {"value": 1, "description": "Free"}
+        ]
+      }
+    ],
+    "examples": []
+  },
+  {
+    "command": "AT#LEV",
+    "description": "Configuration of the line level (POTS mode).",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "S5", "SxS"],
+    "format": "AT#LEV=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Line level.",
+        "values": [
+          {"value": 0, "description": "0 dBm"},
+          {"value": 1, "description": "-3 dBm"},
+          {"value": 2, "description": "-6 dBm"},
+          {"value": 3, "description": "-9 dBm"},
+          {"value": 4, "description": "-10 dBm"},
+          {"value": 5, "description": "-13 dBm"},
+          {"value": 6, "description": "-16 dBm"}
+        ]
+      }
+    ],
+    "examples": []
+  },
+  {
+    "command": "AT#SPD",
+    "description": "Configuration of the speed (POTS mode).",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "S4", "S5", "SxS"],
+    "format": "AT#SPD=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Speed setting.",
+        "values": [
+          {"value": 0, "description": "Auto"},
+          {"value": 1, "description": "Fixed"}
+        ]
+      }
+    ],
+    "examples": []
+  },
+  {
+    "command": "AT#CDA",
+    "description": "Activation/Inhibition of the data channel.",
+    "password_sensitive": false,
+    "applicable_units": ["all units"],
+    "format": "AT#CDA=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Data channel status.",
+        "values": [
+          {"value": 0, "description": "Data channel disable"},
+          {"value": 1, "description": "Data channel enable"}
+        ]
+      }
+    ],
+    "display_command": "AT&V2"
+  },
+  {
+    "command": "AT#BAU",
+    "description": "Data channel bit rate selection.",
+    "password_sensitive": false,
+    "applicable_units": ["all units"],
+    "format": "AT#BAU=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Baud rate.",
+        "values": [
+          {"value": 0, "description": "300 bauds"},
+          {"value": 1, "description": "1200 bauds"},
+          {"value": 2, "description": "2400 bauds"},
+          {"value": 3, "description": "4800 bauds"},
+          {"value": 4, "description": "9600 bauds"}
+        ]
+      }
+    ],
+    "display_command": "AT&V2"
+  },
+  {
+    "command": "AT#PAR",
+    "description": "Data channel parity selection.",
+    "password_sensitive": false,
+    "applicable_units": ["HS3", "S3"],
+    "format": "AT#PAR=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Parity setting.",
+        "values": [
+          {"value": 0, "description": "None"}
+        ]
+      }
+    ],
+    "display_command": "AT&V2"
+  },
+  {
+    "command": "AT#DAT",
+    "description": "Data channel number of bits selection.",
+    "password_sensitive": false,
+    "applicable_units": ["HS3", "S3"],
+    "format": "AT#DAT=i",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Number of data bits.",
+        "values": [
+          {"value": 1, "description": "8 data bits"}
+        ]
+      }
+    ],
+    "display_command": "AT&V2"
+  },
+  {
+    "command": "AT#STO",
+    "description": "Data channel number of stop bits selection.",
+    "password_sensitive": false,
+    "applicable_units": ["HS3", "S3"],
+    "format": "AT#STO=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Number of stop bits.",
+        "values": [
+          {"value": 0, "description": "1 stop bit"}
+        ]
+      }
+    ],
+    "display_command": "AT&V2"
+  },
+  {
+    "command": "AT#REL",
+    "description": "Activation of the relay transmission function.",
+    "password_sensitive": false,
+    "applicable_units": ["all units"],
+    "format": "AT#REL=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Relay transmission status.",
+        "values": [
+          {"value": 0, "description": "Relay transmission disabled"},
+          {"value": 1, "description": "Relay transmission active"}
+        ]
+      }
+    ],
+    "notes": ["This auxiliary function is not available with all coding algorithms, and may not be available simultaneously with another auxiliary function. See details in the HIFISCOOP 3 ISDN user manual."],
+    "display_command": "AT&V2"
+  },
+  {
+    "command": "AT#GPI",
+    "description": "Forces the state of the GPI number i on a Scoopy+ or Scoop 4+. For Scoop 4+: overridden by any change of state of the “physical” GPI.",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "S4", "S5", "SxS"],
+    "format": "AT#GPIi=n",
+    "parameters": [
+      {
+        "name": "i",
+        "type": "integer",
+        "description": "Number of GPI.",
+        "values": [
+          {"value": "1 or 2", "description": "for S+"}
+        ]
+      },
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "GPI state.",
+        "values": [
+          {"value": 0, "description": "GPI open"},
+          {"value": 1, "description": "GPI closed"}
+        ]
+      }
+    ],
+    "display_command": "AT&V2 (Command to display the actual state of the GPI)"
+  },
+  {
+    "command": "AT#GPO",
+    "description": "Forces GPO number i on a Scoopy+ or Scoop 4+. May be overridden by change requested from another origin (e.g. remote GPI if relay transmission is active).",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "S4", "S5", "SxS"],
+    "format": "AT#GPOi=n",
+    "parameters": [
+      {
+        "name": "i",
+        "type": "integer",
+        "description": "Number of GPO.",
+        "values": [
+          {"value": "1 or 2", "description": "for S+"}
+        ]
+      },
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "GPO state.",
+        "values": [
+          {"value": 0, "description": "GPO open"},
+          {"value": 1, "description": "GPO closed"}
+        ]
+      }
+    ],
+    "display_command": "AT&V2 (Command to display the actual state of the GPO)"
+  },
+  {
+    "command": "AT#VOR",
+    "description": "Enables the auxiliary 3 kHz audio channel.",
+    "password_sensitive": false,
+    "applicable_units": ["HS3", "S3", "S4", "S5"],
+    "format": "AT#VOR=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Auxiliary audio channel status.",
+        "values": [
+          {"value": 0, "description": "auxiliary 3 kHz audio channel disabled"},
+          {"value": 1, "description": "auxiliary audio channel enabled"}
+        ]
+      }
+    ],
+    "notes": ["This auxiliary function is not available with all coding algorithms, and may not be available simultaneously with another auxiliary function. See details in the HIFISCOOP 3 ISDN and SCOOP 4+ user manuals."],
+    "display_command": "AT&V2"
+  },
+  {
+    "command": "AT#SMS",
+    "description": "Display a simple text message on the user interface of the audio codec.",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "S4", "S5", "SxS"],
+    "format": "AT#SMS=”text_string”",
+    "parameters": [
+      {
+        "name": "text_string",
+        "type": "string",
+        "description": "Text string.",
+        "notes": ["ASCII characters (other than quotes!).", "Maximum length and list of allowed special characters to be defined (device-dependent)."]
+      }
+    ],
+    "notes": ["The exact way of displaying the message is not specified here (device-dependent)."],
+    "display_command": "not relevant"
+  },
+  {
+    "command": "AT#TYP",
+    "description": "Selection of the format of the audio interfaces. For S4, selection of the audio input source.",
+    "password_sensitive": false,
+    "applicable_units": ["HS3", "S3", "S4", "S5", "Scoop5 S", "Scoop5 S-IP"],
+    "format": "AT#TYP=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Audio interface format.",
+        "values": [
+          {"value": 0, "description": "Analogue format"},
+          {"value": 1, "description": "AES/EBU format, «asynchronous» mode (S4 : AES format)"},
+          {"value": 2, "description": "AES/EBU format, 32 kHz sampling rate (S4: not valid)"},
+          {"value": 3, "description": "AES/EBU format, 48 kHz sampling rate (S4: not valid)"}
+        ]
+      }
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#SYNC",
+    "description": "Selection of synchronisation mode for the AES interfaces.",
+    "password_sensitive": false,
+    "applicable_units": ["S4", "S5", "Scoop5 S", "Scoop5 S-IP"],
+    "format": "AT#SYNC=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Synchronisation mode.",
+        "values": [
+          {"value": 0, "description": "Genlock mode, synchronisation on AES input"},
+          {"value": 1, "description": "Master mode, synchronisation from internal clock or network clock"}
+        ]
+      }
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#AES",
+    "description": "Selection of the nominal sampling rate for the AES interfaces.",
+    "password_sensitive": false,
+    "applicable_units": ["S4", "S5", "Scoop5 S", "Scoop5 S-IP"],
+    "format": "AT#AES=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Sampling rate.",
+        "values": [
+          {"value": 0, "description": "32 kHz sampling rate"},
+          {"value": 1, "description": "48 kHz sampling rate"},
+          {"value": 2, "description": "96 kHz sampling rate"}
+        ]
+      }
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#GIN",
+    "description": "Configuration of the maximum analogue audio input level. For Scoopy+ and Scoopy+ S, global gain applied to input mix.",
+    "password_sensitive": false,
+    "applicable_units": ["HS3", "S3", "S4", "S5", "S+", "SxS"],
+    "format": "AT#GIN=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Desired maximum level, expressed in dBu (integer value).",
+        "values": [
+          {"value": "0-22", "description": "for HS3/S3/S4/S5/SxS"},
+          {"value": "-12-12", "description": "for Scoopy+"}
+        ]
+      }
+    ],
+    "examples": ["AT#GIN=16 (max. input level set to +16 dBu)"],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#GOUT",
+    "description": "Configuration of the maximum analogue audio output level.",
+    "password_sensitive": false,
+    "applicable_units": ["all units"],
+    "format": "AT#GOUT=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Desired maximum level, expressed in dBu (integer value).",
+        "values": [
+          {"value": "0-22", "description": "for most units"},
+          {"value": "-11-22", "description": "for S+"}
+        ]
+      }
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#ZIN",
+    "description": "Configuration of the input impedance.",
+    "password_sensitive": false,
+    "applicable_units": ["S4", "S5", "Scoop5 S"],
+    "format": "AT#ZIN=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Input impedance setting.",
+        "values": [
+          {"value": 0, "description": "low input impedance (600 Ohm)"},
+          {"value": 1, "description": "high input impedance"}
+        ]
+      }
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#IMP",
+    "description": "Configuration of the normal output load.",
+    "password_sensitive": false,
+    "applicable_units": ["HS3", "S3"],
+    "format": "AT#IMP=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Output load setting.",
+        "values": [
+          {"value": 0, "description": "Output load is low impedance (600 Ohm)"},
+          {"value": 1, "description": "Output load is high impedance"}
+        ]
+      }
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#CHS",
+    "description": "Mic/Line input channel switch.",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "Sy+ S"],
+    "format": "AT#CHSi=n",
+    "parameters": [
+      {
+        "name": "i",
+        "type": "integer",
+        "description": "Channel to set.",
+        "values": [1, 2, 3]
+      },
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Channel status.",
+        "values": [
+          {"value": 0, "description": "Channel off"},
+          {"value": 1, "description": "Channel on"}
+        ]
+      }
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#USBA",
+    "description": "USB audio input switch.",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "Sy+ S"],
+    "format": "AT#USBA=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "USB audio input status.",
+        "values": [
+          {"value": 0, "description": "Channel off"},
+          {"value": 1, "description": "Channel on"}
+        ]
+      }
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#GIS",
+    "description": "Mic/Line input gain select.",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "Sy+ S"],
+    "format": "AT#GISi=n",
+    "parameters": [
+      {
+        "name": "i",
+        "type": "integer",
+        "description": "Channel to set.",
+        "values": [1, 2, 3]
+      },
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Input gain.",
+        "values": [
+          {"value": 0, "description": "0 dB"},
+          {"value": 1, "description": "16 dB"},
+          {"value": 2, "description": "32 dB"},
+          {"value": 3, "description": "48 dB"}
+        ]
+      }
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#LIM",
+    "description": "Mic/Line input limiter select.",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "Sy+ S"],
+    "format": "AT#LIMi=n",
+    "parameters": [
+      {
+        "name": "i",
+        "type": "integer",
+        "description": "Channel to set.",
+        "values": [1, 2, 3]
+      },
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Limiter status.",
+        "values": [
+          {"value": 0, "description": "Limiter off (default)"},
+          {"value": 1, "description": "Limiter active"}
+        ]
+      }
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#PWR",
+    "description": "Mic/Line input powering.",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "Sy+ S"],
+    "format": "AT#PWRi=n",
+    "parameters": [
+      {
+        "name": "i",
+        "type": "integer",
+        "description": "Channel to set.",
+        "values": [1, 2, 3]
+      },
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Powering type.",
+        "values": [
+          {"value": 0, "description": "No microphone powering (default)"},
+          {"value": 1, "description": "Phantom +48V"},
+          {"value": 2, "description": "Phantom +12V"},
+          {"value": 3, "description": "T12 power"}
+        ]
+      }
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#HPF",
+    "description": "Mic/Line input HP filter setting.",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "Sy+ S"],
+    "format": "AT#HPFi=n",
+    "parameters": [
+      {
+        "name": "i",
+        "type": "integer",
+        "description": "Channel to set.",
+        "values": [1, 2, 3]
+      },
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "HP filter status.",
+        "values": [
+          {"value": 0, "description": "Filter off (default)"},
+          {"value": 1, "description": "HP filter active"}
+        ]
+      }
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#CHR",
+    "description": "Mic/Line input routing.",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "Sy+ S"],
+    "format": "AT#CHRi=n",
+    "parameters": [
+      {
+        "name": "i",
+        "type": "integer",
+        "description": "Channel to set.",
+        "values": [1, 2, 3]
+      },
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Signal routing.",
+        "values": [
+          {"value": 0, "description": "signal routed center (default)"},
+          {"value": 1, "description": "signal routed left / half left"},
+          {"value": 2, "description": "signal routed right / half right"}
+        ]
+      }
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#CPM",
+    "description": "Channel panning mode.",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "Sy+ S"],
+    "format": "AT#CPM=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Panning mode.",
+        "values": [
+          {"value": 0, "description": "Panning full left / full right (default)"},
+          {"value": 1, "description": "Panning half left / half right"}
+        ]
+      }
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#PAD",
+    "description": "Mic/Line input attenuation pad.",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "Sy+ S"],
+    "format": "AT#PADi=n",
+    "parameters": [
+      {
+        "name": "i",
+        "type": "integer",
+        "description": "Channel to set.",
+        "notes": ["Only i=3 valid for S+"]
+      },
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Pad status.",
+        "values": [
+          {"value": 0, "description": "normal, no pad (default)"},
+          {"value": 1, "description": "pad active"}
+        ]
+      }
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#OSEL",
+    "description": "Output signal selection. Applies both to left and right outputs.",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "Sy+ S"],
+    "format": "AT#OSEL=n",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Output signal.",
+        "values": [
+          {"value": 0, "description": "Send signal"},
+          {"value": 1, "description": "Receive signal"},
+          {"value": 2, "description": "Send/Receive mix"}
+        ]
+      }
+    ],
+    "display_command": "AT&V1"
+  },
+  {
+    "command": "AT#CCR",
+    "description": "Routing of coordination channel to headphones. (Only relevant when the coordination line is active, otherwise the standard routing is used)",
+    "password_sensitive": false,
+    "applicable_units": ["S+", "Sy+ S"],
+    "format": "AT#CCRi=n",
+    "parameters": [
+      {
+        "name": "i",
+        "type": "integer",
+        "description": "Headphone output to configure.",
+        "values": [1, 2]
+      },
+      {
+        "name": "n",
+        "type": "integer",
+        "description": "Routing mode.",
+        "values": [
+          {"value": 0, "description": "Program signal only (both ears, default)"},
+          {"value": 1, "description": "Coordination signal only (both ears)"},
+          {"value": 2, "description": "Program (on left ear) and Coordination (on right)"}
+        ]
+      }
+    ],
+    "display_command": "AT&V1"
+  }
+]

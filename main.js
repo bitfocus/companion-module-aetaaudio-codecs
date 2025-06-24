@@ -636,89 +636,122 @@ class AETAModule extends InstanceBase {
           case 'CHD1':
             this.setVariableValues({ codingBitRate: `${value} kbps` });
             break;
-          case 'NUM1':
-          case 'NUM2':
-          case 'NUM3':
-          case 'NUM4':
-          case 'NUM5':
-          case 'NUM6':
-          case 'NUM7':
-          case 'NUM8':
-            const numIndex = key.slice(3);
-            this.setVariableValues({ [`number${numIndex}`]: value || 'None' });
+          case 'GIN':
+            this.setVariableValues({ inputGain: value });
             break;
-          case 'LOC1':
-          case 'LOC2':
-          case 'LOC3':
-          case 'LOC4':
-          case 'LOC5':
-          case 'LOC6':
-          case 'LOC7':
-          case 'LOC8':
-            const locIndex = key.slice(3);
-            this.setVariableValues({ [`location${locIndex}`]: value || 'None' });
+          case 'GOUT':
+            this.setVariableValues({ outputGain: value });
             break;
-          case 'AUTO1':
-          case 'AUTO2':
-            const autoIndex = key.slice(4);
-            this.setVariableValues({ [`auto${autoIndex}`]: value === '1' ? 'On' : 'Off' });
+          case 'ATE':
+            this.setVariableValues({ localEcho: value === '1' ? 'On' : 'Off' });
+            break;
+          case 'DIA':
+            this.setVariableValues({ dialMethod: value });
+            break;
+          case 'TON':
+            this.setVariableValues({ dialTone: value });
+            break;
+          case 'TAE':
+            this.setVariableValues({ callFiltering: value });
+            break;
+          case 'TFS':
+            this.setVariableValues({ proprietaryFilter: value });
+            break;
+          case 'HLC':
+            this.setVariableValues({ hlc: value });
             break;
           case 'RED1':
           case 'RED2':
-            const redIndex = key.slice(3);
-            this.setVariableValues({ [`redundancy${redIndex}`]: value === '1' ? 'On' : 'Off' });
+            this.setVariableValues({ autoRedial: value === '1' ? 'On' : 'Off' });
+            break;
+          case 'NBR':
+            this.setVariableValues({ redialRetries: value });
+            break;
+          case 'TTR':
+            this.setVariableValues({ redialWaitTime: value });
             break;
           case 'LCT':
-            this.setVariableValues({ lineConnectionType: value });
+            this.setVariableValues({ loopControl: value });
             break;
           case 'LLBC':
-            this.setVariableValues({ llbc: value });
+            this.setVariableValues({ backupNetwork: value });
             break;
           case 'LLBR':
-            this.setVariableValues({ llbr: value });
+            this.setVariableValues({ passiveBackupMode: value });
             break;
-          case 'FRE':
-            this.setVariableValues({ frequency: value });
+          case 'ORI':
+            this.setVariableValues({ originalCopy: value });
+            break;
+          case 'COP':
+            this.setVariableValues({ copyright: value });
+            break;
+          case 'COR':
+            this.setVariableValues({ errorCorrection: value });
+            break;
+          case 'CLK':
+            this.setVariableValues({ clockMode: value });
+            break;
+          case 'LEV':
+            this.setVariableValues({ lineLevel: value });
+            break;
+          case 'SPD':
+            this.setVariableValues({ speed: value });
+            break;
+          case 'CDA':
+            this.setVariableValues({ dataChannel: value });
+            break;
+          case 'BAU':
+            this.setVariableValues({ baudRate: value });
+            break;
+          case 'REL':
+            this.setVariableValues({ relayTransmission: value });
+            break;
+          case 'GPI1':
+            this.setVariableValues({ gpi1: value });
+            break;
+          case 'GPI2':
+            this.setVariableValues({ gpi2: value });
+            break;
+          case 'GPO1':
+            this.setVariableValues({ gpo1: value });
+            break;
+          case 'GPO2':
+            this.setVariableValues({ gpo2: value });
+            break;
+          case 'VOR':
+            this.setVariableValues({ auxAudioChannel: value });
+            break;
+          case 'TYP':
+            this.setVariableValues({ audioInterfaceFormat: value });
             break;
           case 'SYNC':
-            this.setVariableValues({ syncMode: value === '0' ? 'Genlock' : 'Master' });
+            this.setVariableValues({ aesSyncMode: value === '0' ? 'Genlock' : 'Master' });
             break;
           case 'AES':
             const aesRates = { '0': '32 kHz', '1': '48 kHz', '2': '96 kHz' };
             this.setVariableValues({ aesSamplingRate: aesRates[value] || value });
             break;
-          case 'GIN':
-            this.setVariableValues({ gainIn: value });
+          case 'ZIN':
+            this.setVariableValues({ inputImpedance: value });
             break;
-          case 'GOUT':
-            this.setVariableValues({ gainOut: value });
+          case 'IMP':
+            this.setVariableValues({ outputLoad: value });
             break;
-          case 'TAE':
-            this.setVariableValues({ tae: value });
+          case 'CPM':
+            this.setVariableValues({ channelPanning: value });
             break;
-          case 'HLC':
-            this.setVariableValues({ hlc: value });
+          case 'OSEL':
+            this.setVariableValues({ outputSignal: value });
             break;
-          case 'NBR':
-            this.setVariableValues({ nbr: value });
+          case 'PAD3':
+            this.setVariableValues({ inputPad: value });
             break;
-          case 'TTR':
-            this.setVariableValues({ ttr: value });
+          case 'CCR1':
+          case 'CCR2':
+            this.setVariableValues({ headphoneRouting: value });
             break;
-          case 'DHCP':
-            this.setVariableValues({ dhcp: value });
-            break;
-          case 'IP':
-            this.setVariableValues({ ipAddress: value });
-            break;
-          case 'IPM':
-            this.setVariableValues({ ipMask: value });
-            break;
-          case 'GW':
-            this.setVariableValues({ gateway: value });
-            break;
-          case 'DNS':
-            this.setVariableValues({ dns: value });
+          case 'SMS':
+            this.setVariableValues({ smsMessage: value });
             break;
           default:
             // Only log if it's not an AT command echo or continuation marker
