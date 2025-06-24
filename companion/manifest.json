@@ -5,8 +5,8 @@
 	"description": "Control AETA Audio Codecs",
 	"version": "1.0.0",
 	"license": "MIT",
-	"repository": "git+https://github.com/bitfocus/companion-module-aeta-scoopy.git",
-	"bugs": "https://github.com/bitfocus/companion-module-aeta-scoopy/issues",
+	"repository": "git+https://github.com/bitfocus/companion-module-aeta-codecs.git",
+	"bugs": "https://github.com/bitfocus/companion-module-aeta-codecs/issues",
 	"maintainers": [
 		{
 			"name": "Damien",
