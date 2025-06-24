@@ -1,6 +1,6 @@
-# AETA Scoopy+ Companion Module
+# AETA Audio Codecs Companion Module
 
-This module allows you to control AETA Scoopy+ and compatible codecs via the AARC protocol using Bitfocus Companion.
+This module allows you to control AETA Audio Codecs Bitfocus Companion.
 
 ## Features
 
@@ -159,8 +159,13 @@ This module allows you to control AETA Scoopy+ and compatible codecs via the AAR
 
 ## Supported Models
 
-- AETA Scoopy+
-- Other AETA codecs supporting AARC protocol
+- HIFISCOOP 3
+- SCOOP 3
+- SCOOP 4+
+- SCOOPY+
+- Scoop5 S
+- Scoop5 S-IP
+- Scoopy+ S
 
 ## Error Handling
 

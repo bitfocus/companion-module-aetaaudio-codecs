@@ -1,6 +1,6 @@
-# AETA Scoopy+ Module for Companion
+# AETA Audio Codecs Module for Companion
 
-This module allows control of AETA Scoopy+ audio codecs through Companion.
+This module allows control of AETA Audio Codecs through Companion.
 
 ## Configuration
 
@@ -188,8 +188,13 @@ This module allows control of AETA Scoopy+ audio codecs through Companion.
 
 ## Supported Models
 
-* AETA Scoopy+
-* Other AETA codecs supporting AARC protocol
+* HIFISCOOP 3
+* SCOOP 3
+* SCOOP 4+
+* SCOOPY+
+* Scoop5 S
+* Scoop5 S-IP
+* Scoopy+ S
 
 ## Error Handling
 

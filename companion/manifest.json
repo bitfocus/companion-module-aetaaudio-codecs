@@ -1,8 +1,8 @@
 {
-	"id": "aeta-scoopy",
-	"name": "AETA Scoopy+",
+	"id": "aeta-audio-codecs",
+	"name": "AETA Audio Codecs",
 	"shortname": "AETA",
-	"description": "Control AETA Scoopy+ and compatible audio codecs",
+	"description": "Control AETA Audio Codecs",
 	"version": "1.0.0",
 	"license": "MIT",
 	"repository": "git+https://github.com/bitfocus/companion-module-aeta-scoopy.git",
@@ -28,7 +28,7 @@
 		"ScoopTeam"
 	],
 	"keywords": [
-		"Audio Codec",
+		"Audio Codecs",
 		"Broadcast",
 		"SIP",
 		"VoIP"
