@@ -192,9 +192,9 @@ This module allows control of AETA Audio Codecs through Companion.
 * SCOOP 3
 * SCOOP 4+
 * SCOOPY+
-* Scoop5 S
-* Scoop5 S-IP
-* Scoopy+ S
+* SCOOP5 S
+* SCOOP5 S-IP
+* SCOOPY+ S
 
 ## Error Handling
 
