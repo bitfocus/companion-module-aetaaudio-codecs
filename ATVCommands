@@ -1,0 +1,340 @@
+{
+  "commands": [
+    {
+      "command": "AT&V1",
+      "description": "Display of the codec and audio interfaces configuration.",
+      "applicable_to": "all units",
+      "format": "AT&V1",
+      "parameters": [
+        {"name": "#TYP", "value": "3", "description": "AES/EBU 48kHz", "notes": "only returned by S4+/S5/SxS"},
+        {"name": "#SYNC", "value": "0", "description": "AES Genlock", "notes": "only returned by S4+/S5/SxS"},
+        {"name": "#AES", "value": "1", "description": "AES 48 kHz", "notes": "not returned by S+"},
+        {"name": "#FRE", "value": "0", "description": "48 kHz"},
+        {"name": "#SEL", "value": "0", "description": "NORMAL (single)"},
+        {"name": "#SELIP", "value": "0", "description": "NORMAL (single)", "notes": "not returned by S+"},
+        {"name": "#COD1", "value": "4", "description": "MPEG Layer2 J52 / STEREO"},
+        {"name": "#COD2", "value": "1", "description": "Value for codec 2", "notes": "only in double codec mode"},
+        {"name": "#CHD1", "value": "192", "description": "192 KB/S 3B"},
+        {"name": "#CHD2", "value": "64", "description": "Value for codec 2", "notes": "only in double codec mode"},
+        {"name": "#COR", "value": "0", "description": "MODE 0"},
+        {"name": "#GIN", "value": "22"},
+        {"name": "#GOUT", "value": "16"},
+        {"name": "#ZIN", "value": "0", "description": "600 Ohm", "notes": "only returned by S4/S5/SxS"},
+        {"name": "#IMP", "value": "0", "description": "600 Ohm", "notes": "only returned by HS3 / S3"},
+        {"name": "#CHS1", "value": "1", "notes": "only returned by S+"},
+        {"name": "#CHS2", "value": "0", "notes": "only returned by S+"},
+        {"name": "#CHS3", "value": "1", "notes": "only returned by S+"},
+        {"name": "#USBA", "value": "0", "notes": "only returned by S+"},
+        {"name": "#GIS1", "value": "2", "notes": "only returned by S+"},
+        {"name": "#GIS2", "value": "0", "notes": "only returned by S+"},
+        {"name": "#GIS3", "value": "0", "notes": "only returned by S+"},
+        {"name": "#LIM1", "value": "1", "notes": "only returned by S+"},
+        {"name": "#LIM2", "value": "0", "notes": "only returned by S+"},
+        {"name": "#LIM3", "value": "0", "notes": "only returned by S+"},
+        {"name": "#PWR1", "value": "1", "notes": "only returned by S+"},
+        {"name": "#PWR2", "value": "2", "notes": "only returned by S+"},
+        {"name": "#PWR3", "value": "0", "notes": "only returned by S+"},
+        {"name": "#HPF1", "value": "1", "notes": "only returned by S+"},
+        {"name": "#HPF2", "value": "0", "notes": "only returned by S+"},
+        {"name": "#HPF3", "value": "0", "notes": "only returned by S+"},
+        {"name": "#CHR1", "value": "0", "notes": "only returned by S+"},
+        {"name": "#CHR2", "value": "2", "notes": "only returned by S+"},
+        {"name": "#CHR3", "value": "0", "notes": "only returned by S+"},
+        {"name": "#CPM", "value": "1", "notes": "only returned by S+"},
+        {"name": "#PAD3", "value": "1", "notes": "only returned by S+"},
+        {"name": "#OSEL", "value": "1", "notes": "only returned by S+"},
+        {"name": "#CCR1", "value": "0", "notes": "only returned by S+"},
+        {"name": "#CCR2", "value": "2", "notes": "only returned by S+"},
+        {"name": "#REP", "value": "0", "notes": "only returned by S5/S+"}
+      ],
+      "warning": "The example is a compilation of lines (#xxx=...) possibly included in the answer to the command. Each line can be seen, but the whole combination as above is in fact impossible!"
+    },
+    {
+      "command": "AT&V2",
+      "description": "Display of the auxiliary functions configuration.",
+      "applicable_to": "all units",
+      "format": "AT&V2",
+      "parameters": [
+        {"name": "#CDA", "value": "1", "description": "ON"},
+        {"name": "#STO", "value": "0", "description": "1 stop bit"},
+        {"name": "#DAT", "value": "1", "description": "8 bits"},
+        {"name": "#PAR", "value": "0", "description": "None"},
+        {"name": "#BAU", "value": "4", "description": "9600 bits/s"},
+        {"name": "#VOR", "value": "0", "description": "OFF", "notes": "not returned by S+"},
+        {"name": "#REL", "value": "1", "description": "ACTIVE", "notes": "S4 / S5 / S+ / SxS"},
+        {"name": "#GPI1", "value": "0", "notes": "S4 / S5 / S+ / SxS"},
+        {"name": "#GPI2", "value": "1", "notes": "S4 / S5 / S+ / SxS"},
+        {"name": "#GPO1", "value": "0", "notes": "S4 / S5 / S+ / SxS"},
+        {"name": "#GPO2", "value": "0", "notes": "S4 / S5 / S+ / SxS"}
+      ]
+    },
+    {
+      "command": "AT&V3",
+      "description": "Display of codec alarms in the current language. Codec alarms are listed in free text format.",
+      "applicable_to": "HS3 / S3 / S4",
+      "format": "AT&V3",
+      "example_response": "ALARM\nNO ALARM\nOK",
+      "note": "AT#SUP command is preferred for a management system in order to get numerical and language-insensitive codes."
+    },
+    {
+      "command": "AT&V4",
+      "description": "Display of the possible bit rate settings for the current coding algorithm.",
+      "applicable_to": "HS3 / S3",
+      "format": "AT&V4",
+      "parameters": [
+        {"name": "#CHD1=64", "description": "64 KB/S 1B"},
+        {"name": "#CHD1=128", "description": "128 KB/S 2B"},
+        {"name": "#CHD1=192", "description": "192 KB/S 3B"},
+        {"name": "#CHD1=256", "description": "256 KB/S 4B"},
+        {"name": "#CHD1=320", "description": "320 KB/S 5B"},
+        {"name": "#CHD1=384", "description": "384 KB/S 6B"}
+      ]
+    },
+    {
+      "command": "AT&V5",
+      "description": "Display of the current country configuration parameters.",
+      "applicable_to": "all units",
+      "format": "AT&V5",
+      "parameters": [
+        {"name": "#LAN", "value": "1", "description": "English"},
+        {"name": "#ISDN", "value": "1", "description": "Euro ISDN"}
+      ]
+    },
+    {
+      "command": "AT&V6",
+      "description": "Display of alarm masks",
+      "applicable_to": "HS3 / S3",
+      "format": "AT&V6",
+      "parameters": [
+        {"name": "#MAL1", "value": "255"},
+        {"name": "#MAL2", "value": "255"},
+        {"name": "#MAL3", "value": "255"}
+      ],
+      "note": "See AT#MAL command for the bit mapping in the masks."
+    },
+    {
+      "command": "AT&V7",
+      "description": "Display of the negotiated codec configuration (during a connection).",
+      "applicable_to": "all units",
+      "format": "AT&V7",
+      "response_structure": {
+        "CODEC 1": {
+          "COD": [
+            {"name": "#COD1", "value": "4", "description": "MPEG Layer2 J52 / STEREO"},
+            {"name": "#CHD1", "value": "192", "description": "192 KB/S 3B"},
+            {"name": "#COR", "value": "0", "description": "MODE 0"}
+          ],
+          "DEC": [
+            {"name": "#COD1", "value": "4", "description": "MPEG Layer2 J52 / STEREO"},
+            {"name": "#CHD1", "value": "192", "description": "192 KB/S 3B"},
+            {"name": "#COR", "value": "0", "description": "MODE 0"}
+          ]
+        }
+      }
+    },
+    {
+      "command": "AT&V8",
+      "description": "Display of the control port configuration",
+      "applicable_to": "HS3 / S3",
+      "format": "AT&V8",
+      "parameters": [
+        {"name": "#STO_X", "value": "0", "description": "1 stop bit"},
+        {"name": "#DAT_X", "value": "1", "description": "8 bits"},
+        {"name": "#PAR_X", "value": "0", "description": "None"},
+        {"name": "#BAU_X", "value": "4", "description": "9600 bits/s"}
+      ]
+    },
+    {
+      "command": "AT&V9",
+      "description": "Display of the configuration of the incoming call filtering, plus the memory operation mode and the IP network configuration.",
+      "applicable_to": "all units",
+      "format": "AT&V9",
+      "parameters": [
+        {"name": "#TAE", "value": "2", "description": "Data calls"},
+        {"name": "#TFS", "value": "1", "description": "Proprietary"},
+        {"name": "#NAC", "value": "0", "description": "1 global set", "notes": "only HS3 / S3"},
+        {"name": "#HLC", "value": "1", "description": "No", "notes": "only HS3 / S3"},
+        {"name": "#NBR", "value": "0", "description": "Infinite number of attempts for auto-redial is active"},
+        {"name": "#TTR", "value": "5", "description": "Time to redial is 5 seconds"},
+        {"name": "#IPQ", "value": "1", "description": "“IP Quality” setting is “Middle”"},
+        {"name": "#DHCP", "value": "0"},
+        {"name": "#IP", "value": "10.0.20.33"},
+        {"name": "#IPM", "value": "255.255.255.0"},
+        {"name": "#GW", "value": "10.0.20.254"},
+        {"name": "#DNS", "value": "10.0.20.3"}
+      ]
+    },
+    {
+      "command": "AT&V10",
+      "description": "Display a list of options installed in the unit",
+      "applicable_to": "S4 / S5 / SxS",
+      "format": "AT&V10",
+      "parameters": [
+        {"name": "#PSTN", "value": "0", "description": "POTS not installed"},
+        {"name": "#NB_ISDN", "value": "1", "description": "1 ISDN interface (1B/2B)"},
+        {"name": "#TDAC", "value": "0", "description": "TDAC not installed"},
+        {"name": "#TDAC_ASYMMETRIC", "value": "0", "description": "“asymmetric TDAC” not installed"},
+        {"name": "#AAC", "value": "1", "description": "AAC option installed"},
+        {"name": "#MOBILE", "value": "0", "description": "Mobile option not installed"}
+      ],
+      "answer_format": {
+        "format": "#OPTxx=n",
+        "n_values": {
+          "0": "Option OPTxx not installed",
+          "1": "Option installed"
+        },
+        "NB_ISDN_values": {
+          "0": "no ISDN interface",
+          "1": "1 ISDN line",
+          "2": "2 ISDN lines"
+        }
+      }
+    },
+    {
+      "command": "AT&V11",
+      "description": "Display the configuration of the events mask",
+      "applicable_to": "S4 / S5 / SxS",
+      "format": "AT&V11",
+      "parameters": [
+        {"event": "RINGING_1", "value": "1", "description": "Event “Ring” active on codec 1"},
+        {"event": "CALLING_1", "value": "0", "description": "Event “Calling” masked on codec 1"},
+        {"event": "ESTABLISHED_1", "value": "1", "description": "Event “Established” active on codec 1"},
+        {"event": "RELEASED_1", "value": "1", "description": "Event “Released” active on codec 1"},
+        {"event": "RINGING_2", "value": "1", "description": "Event “Ring” active on codec 2"},
+        {"event": "CALLING_2", "value": "0", "description": "Event “Calling” masked on codec 2"},
+        {"event": "ESTABLISHED_2", "value": "0", "description": "Event “Established” masked on codec 2"},
+        {"event": "RELEASED_2", "value": "1", "description": "Event “Released” active on codec 2"}
+      ],
+      "answer_format": {
+        "format": "#EVENT_i=m",
+        "i_values": {
+          "1": "Event on codec 1",
+          "2": "Event on codec 2"
+        },
+        "m_values": {
+          "0": "Event type masked on codec i",
+          "1": "Event type active on codec i"
+        }
+      }
+    },
+    {
+      "command": "AT&V20",
+      "description": "Display audio levels",
+      "applicable_to": "S4 / S5 / SxS",
+      "format": "AT&V20",
+      "example_response": "#LVL=20,18,3,4 OK",
+      "answer_format": {
+        "format": "#LVL=n,p,q,r",
+        "description": "Level on Tx left = -n dBFS, Level on Tx right = -p dBFS, Level on Rx left = -q dBFS, Level on Rx right = -r dBFS. 99 is equivalent to -infinity ('total' silence)."
+      }
+    },
+    {
+      "command": "AT&V21",
+      "description": "Mobile network status display",
+      "applicable_to": "S5 / S+ / SxS",
+      "format": "AT&V21",
+      "parameters": [
+        {"name": "#CREG", "value": "1", "description": "Registered on the mobile network. 0: not registered, 1: registered"},
+        {"name": "#CNTI", "value": "HSDPA", "description": "Network is currently 3G technology (HSDPA). Possible values: GSM, GPRS, EDGE, UMTS, HSDPA, HSUPA, HSPA+, LTE, XXX (unknown)."}
+      ]
+    },
+    {
+      "command": "AT#SUP",
+      "description": "Global supervisory command. Allows single command interrogation of the device in order to acquire the equipment status and the current value of some configuration parameters.",
+      "applicable_to": "all units",
+      "format": "AT#SUP[nnn]",
+      "format_description": "nnn is a binary mask (in decimal format) filtering the answer. For each bit bi in the mask, the corresponding information is enabled if bi = 1. If nnn is not specified, it defaults to 511 (all information display is enabled).",
+      "mask_bits": [
+        {"bit": "b0", "description": "current configuration number (obsolete)"},
+        {"bit": "b1", "description": "test loops"},
+        {"bit": "b2", "description": "alarms"},
+        {"bit": "b3", "description": "codec status only"},
+        {"bit": "b4", "description": "codec and simple communication status"},
+        {"bit": "b5", "description": "codec and detailed communication status"},
+        {"bit": "b6", "description": "incoming call requests"},
+        {"bit": "b7", "description": "options available in the device"},
+        {"bit": "b8", "description": "transmission errors monitoring (obsolete)"}
+      ],
+      "response_formats": {
+        "config_number_b0": {
+          "format": "CFG=0",
+          "description": "fixed answer"
+        },
+        "test_loops_b1": {
+          "format": "BOU=n",
+          "n_values": {
+            "0": "no loop",
+            "1": "AD/DA loopback",
+            "2": "« type 2 » loop",
+            "3": "« type 3 » loop",
+            "4": "analogue output to input loopback",
+            "5": "coding test (not implemented)"
+          }
+        },
+        "alarms_b2": {
+          "format": "ALA:D1=x,D2=y,D3=z",
+          "bytes": {
+            "x_D1": [
+              {"bit": "b0", "description": "Fuse failure"},
+              {"bit": "b2", "description": "Left decoder fault"},
+              {"bit": "b3", "description": "Right decoder fault"},
+              {"bit": "b4", "description": "Input overload"},
+              {"bit": "b5", "description": "Data channel fault"},
+              {"bit": "b7", "description": "AES input fault", "notes": "not returned by S+"}
+            ],
+            "y_D2": [
+              {"bit": "b3", "description": "Sampling rate error", "notes": "not returned by S+"}
+            ],
+            "z_D3": [
+              {"bit": "b0", "description": "Encoder 1 fallback"},
+              {"bit": "b1", "description": "Decoder 1 fallback"},
+              {"bit": "b4", "description": "Encoder 2 fallback", "notes": "not returned by S+"},
+              {"bit": "b5", "description": "Decoder 2 fallback", "notes": "not returned by S+"}
+            ]
+          }
+        },
+        "communication_status_b3_b4_b5": {
+          "format": "COD1:S=s –C1=x,N1=Num*SA,CLS=y,VAL=z ... COD2:S=s...",
+          "s_codec_status": {
+            "0": "idle", "1": "Call : 1st call in progress", "2": "Call : 1st call connected",
+            "3": "Call : negotiating", "4": "Call : connecting other channels",
+            "5": "Answer : 1st call waiting for manual answer", "6": "Answer : 1st call in progress",
+            "7": "Answer : 1st call connected", "8": "Answer : negotiating",
+            "9": "Answer: other channels connected", "10": "End of negotiation",
+            "11": "All links established", "12": "Disconnection in progress",
+            "13": "Codec disconnection request", "14": "Wait for codec disconnection acknowledgement",
+            "15": "Outgoing call request under process"
+          },
+          "x_connection_status": {
+            "0": "Idle connection", "1": "Call in progress", "2": "Search", "3": "Ring",
+            "4": "Connection", "5": "Disconnection request", "6": "Disconnection",
+            "7": "Connected outgoing call (only for S4/S5)", "8": "Connected incoming call (only for S4/S5)"
+          },
+          "other_fields": "Num: ISDN number, SA: Sub-Address, Y: ISDN error class, Z: ISDN error code."
+        },
+        "incoming_call_b6": {
+          "format": "ENT:APPEL1=x,APPEL2=x",
+          "x_values": {
+            "0": "No incoming call waiting",
+            "1": "Incoming call waiting"
+          }
+        },
+        "options_b7": {
+          "format": "USI: DEP=1,AES=b, V8K=c,FIL=d,DSP=0,RSC=1,AL3=g,TDA=h,A64=0,CCS=1",
+          "fields": {
+            "b_AES": {"0": "absent", "1": "installed"},
+            "c_V8K": {"0": "Aux audio channel absent", "1": "installed"},
+            "d_FIL": "Number of available BRI / ISDN interfaces (1 to 3)",
+            "g_AL3": {"0": "MPEG Layer 3 not available", "1": "installed"},
+            "h_TDA": {"0": "TDAC not available", "1": "installed"}
+          }
+        },
+        "errors_b8": {
+          "format": "PERF: -DMIN=x,y,",
+          "notes": "HS3 / S3"
+        }
+      },
+      "notes": "AT#SUP is the only command that can be sent after a ATDSi dialling command waiting for CONNECT or NO CARRIER. It can thus be used at this time to monitor outgoing calls. For Scoop4+, Scoop 5 or Scoopy+, only AT#SUP is allowed."
+    }
+  ]
+}

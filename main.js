@@ -492,6 +492,81 @@ class AETAModule extends InstanceBase {
       return;
     }
 
+    // Handle grouped/multi-value and device-specific responses
+    if (response.startsWith('#LVL=')) {
+      // #LVL=n,p,q,r (TxL, TxR, RxL, RxR)
+      const [n, p, q, r] = response.substring(5).split(',').map(Number);
+      this.setVariableValues({
+        audioLevel: `TxL: -${n}dBFS, TxR: -${p}dBFS, RxL: -${q}dBFS, RxR: -${r}dBFS`
+      });
+      return;
+    }
+    if (response.startsWith('ALA:D1=')) {
+      const match = response.match(/D1=(\d+),D2=(\d+),D3=(\d+)/);
+      if (match) {
+        const [d1, d2, d3] = match.slice(1);
+        this.setVariableValues({ alarmD1: d1, alarmD2: d2, alarmD3: d3 });
+      }
+      return;
+    }
+    if (response.startsWith('USI:')) {
+      // Options available in the device (AT#SUP b7)
+      // Example: USI: DEP=1,AES=1,V8K=1,FIL=2,DSP=0,RSC=1,AL3=1,TDA=0,A64=0,CCS=1
+      const fields = response.replace('USI:', '').split(',');
+      const usiVars = {};
+      fields.forEach(f => {
+        const [k, v] = f.split('=');
+        if (k && v) usiVars[k.trim()] = v.trim();
+      });
+      if (usiVars.AES) this.setVariableValues({ aesSamplingRate: usiVars.AES === '1' ? 'Installed' : 'Absent' });
+      if (usiVars.V8K) this.setVariableValues({ auxAudioChannel: usiVars.V8K === '1' ? 'Installed' : 'Absent' });
+      if (usiVars.AL3) this.setVariableValues({ codingAlgorithm: usiVars.AL3 === '1' ? 'MPEG Layer 3' : 'Not available' });
+      if (usiVars.TDA) this.setVariableValues({ dataChannel: usiVars.TDA === '1' ? 'Installed' : 'Not available' });
+      return;
+    }
+    if (response.startsWith('#LAN=')) {
+      const lan = response.split('=')[1];
+      const langs = { '1': 'English', '2': 'French', '3': 'German', '4': 'Spanish' };
+      this.setVariableValues({ language: langs[lan] || lan });
+      return;
+    }
+    if (response.startsWith('#ISDN=')) {
+      const isdn = response.split('=')[1];
+      const isdns = { '1': 'Euro ISDN', '2': 'US ISDN', '3': 'Japan ISDN' };
+      this.setVariableValues({ isdnType: isdns[isdn] || isdn });
+      return;
+    }
+    if (response.startsWith('#MAL1=') || response.startsWith('#MAL2=') || response.startsWith('#MAL3=')) {
+      const [key, value] = response.split('=');
+      this.setVariableValues({ [key.toLowerCase()]: value });
+      return;
+    }
+    if (response.startsWith('#OPT')) {
+      const match = response.match(/#OPT(\w+)=(\d+)/);
+      if (match) {
+        const [, opt, val] = match;
+        this.setVariableValues({ [`option_${opt}`]: val === '1' ? 'Installed' : 'Not installed' });
+      }
+      return;
+    }
+    if (response.startsWith('#EVENT_')) {
+      const match = response.match(/#EVENT_(\d+)=(\d+)/);
+      if (match) {
+        const [, idx, val] = match;
+        this.setVariableValues({ [`event_${idx}`]: val === '1' ? 'Active' : 'Masked' });
+      }
+      return;
+    }
+    if (response.startsWith('#CREG=')) {
+      const val = response.split('=')[1];
+      this.setVariableValues({ mobileRegistered: val === '1' ? 'Registered' : 'Not registered' });
+      return;
+    }
+    if (response.startsWith('#CNTI=')) {
+      const val = response.split('=')[1];
+      this.setVariableValues({ mobileNetwork: val });
+      return;
+    }
     // Rest of the parsing logic
     if (response === 'OK') {
       this.setVariableValues({ connectionStatus: 'Connected' });
@@ -636,122 +711,89 @@ class AETAModule extends InstanceBase {
           case 'CHD1':
             this.setVariableValues({ codingBitRate: `${value} kbps` });
             break;
-          case 'GIN':
-            this.setVariableValues({ inputGain: value });
+          case 'NUM1':
+          case 'NUM2':
+          case 'NUM3':
+          case 'NUM4':
+          case 'NUM5':
+          case 'NUM6':
+          case 'NUM7':
+          case 'NUM8':
+            const numIndex = key.slice(3);
+            this.setVariableValues({ [`number${numIndex}`]: value || 'None' });
             break;
-          case 'GOUT':
-            this.setVariableValues({ outputGain: value });
+          case 'LOC1':
+          case 'LOC2':
+          case 'LOC3':
+          case 'LOC4':
+          case 'LOC5':
+          case 'LOC6':
+          case 'LOC7':
+          case 'LOC8':
+            const locIndex = key.slice(3);
+            this.setVariableValues({ [`location${locIndex}`]: value || 'None' });
             break;
-          case 'ATE':
-            this.setVariableValues({ localEcho: value === '1' ? 'On' : 'Off' });
-            break;
-          case 'DIA':
-            this.setVariableValues({ dialMethod: value });
-            break;
-          case 'TON':
-            this.setVariableValues({ dialTone: value });
-            break;
-          case 'TAE':
-            this.setVariableValues({ callFiltering: value });
-            break;
-          case 'TFS':
-            this.setVariableValues({ proprietaryFilter: value });
-            break;
-          case 'HLC':
-            this.setVariableValues({ hlc: value });
+          case 'AUTO1':
+          case 'AUTO2':
+            const autoIndex = key.slice(4);
+            this.setVariableValues({ [`auto${autoIndex}`]: value === '1' ? 'On' : 'Off' });
             break;
           case 'RED1':
           case 'RED2':
-            this.setVariableValues({ autoRedial: value === '1' ? 'On' : 'Off' });
-            break;
-          case 'NBR':
-            this.setVariableValues({ redialRetries: value });
-            break;
-          case 'TTR':
-            this.setVariableValues({ redialWaitTime: value });
+            const redIndex = key.slice(3);
+            this.setVariableValues({ [`redundancy${redIndex}`]: value === '1' ? 'On' : 'Off' });
             break;
           case 'LCT':
-            this.setVariableValues({ loopControl: value });
+            this.setVariableValues({ lineConnectionType: value });
             break;
           case 'LLBC':
-            this.setVariableValues({ backupNetwork: value });
+            this.setVariableValues({ llbc: value });
             break;
           case 'LLBR':
-            this.setVariableValues({ passiveBackupMode: value });
+            this.setVariableValues({ llbr: value });
             break;
-          case 'ORI':
-            this.setVariableValues({ originalCopy: value });
-            break;
-          case 'COP':
-            this.setVariableValues({ copyright: value });
-            break;
-          case 'COR':
-            this.setVariableValues({ errorCorrection: value });
-            break;
-          case 'CLK':
-            this.setVariableValues({ clockMode: value });
-            break;
-          case 'LEV':
-            this.setVariableValues({ lineLevel: value });
-            break;
-          case 'SPD':
-            this.setVariableValues({ speed: value });
-            break;
-          case 'CDA':
-            this.setVariableValues({ dataChannel: value });
-            break;
-          case 'BAU':
-            this.setVariableValues({ baudRate: value });
-            break;
-          case 'REL':
-            this.setVariableValues({ relayTransmission: value });
-            break;
-          case 'GPI1':
-            this.setVariableValues({ gpi1: value });
-            break;
-          case 'GPI2':
-            this.setVariableValues({ gpi2: value });
-            break;
-          case 'GPO1':
-            this.setVariableValues({ gpo1: value });
-            break;
-          case 'GPO2':
-            this.setVariableValues({ gpo2: value });
-            break;
-          case 'VOR':
-            this.setVariableValues({ auxAudioChannel: value });
-            break;
-          case 'TYP':
-            this.setVariableValues({ audioInterfaceFormat: value });
+          case 'FRE':
+            this.setVariableValues({ frequency: value });
             break;
           case 'SYNC':
-            this.setVariableValues({ aesSyncMode: value === '0' ? 'Genlock' : 'Master' });
+            this.setVariableValues({ syncMode: value === '0' ? 'Genlock' : 'Master' });
             break;
           case 'AES':
             const aesRates = { '0': '32 kHz', '1': '48 kHz', '2': '96 kHz' };
             this.setVariableValues({ aesSamplingRate: aesRates[value] || value });
             break;
-          case 'ZIN':
-            this.setVariableValues({ inputImpedance: value });
+          case 'GIN':
+            this.setVariableValues({ gainIn: value });
             break;
-          case 'IMP':
-            this.setVariableValues({ outputLoad: value });
+          case 'GOUT':
+            this.setVariableValues({ gainOut: value });
             break;
-          case 'CPM':
-            this.setVariableValues({ channelPanning: value });
+          case 'TAE':
+            this.setVariableValues({ tae: value });
             break;
-          case 'OSEL':
-            this.setVariableValues({ outputSignal: value });
+          case 'HLC':
+            this.setVariableValues({ hlc: value });
             break;
-          case 'PAD3':
-            this.setVariableValues({ inputPad: value });
+          case 'NBR':
+            this.setVariableValues({ nbr: value });
             break;
-          case 'CCR1':
-          case 'CCR2':
-            this.setVariableValues({ headphoneRouting: value });
+          case 'TTR':
+            this.setVariableValues({ ttr: value });
             break;
-          case 'SMS':
-            this.setVariableValues({ smsMessage: value });
+          case 'DHCP':
+            this.setVariableValues({ dhcp: value });
+            break;
+          case 'IP':
+            this.setVariableValues({ ipAddress: value });
+            break;
+          case 'IPM':
+            this.setVariableValues({ ipMask: value });
+            break;
+          case 'GW':
+            this.setVariableValues({ gateway: value });
+            break;
+          case 'DNS':
+            this.setVariableValues({ dns: value });
             break;
           default:
             // Only log if it's not an AT command echo or continuation marker
