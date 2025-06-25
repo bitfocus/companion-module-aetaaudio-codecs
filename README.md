@@ -180,8 +180,4 @@ Handles:
 ## Version History
 
 ### 1.0.0
-- Initial release: call control, codec config, status monitoring
-
-### 1.1.0
-- Added preset configurations, advanced settings, improved error handling
-- VU meter support (feature currently disabled)
+- Initial release

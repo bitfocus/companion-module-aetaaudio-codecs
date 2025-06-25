@@ -210,12 +210,3 @@ The module includes comprehensive error handling:
 
 ### Version 1.0.0
 * Initial release
-* Basic call control
-* Codec configuration
-* Status monitoring
-
-### Version 1.1.0
-* Added VU meter support (feature currently disabled)
-* Added preset configurations
-* Enhanced alarm monitoring
-* Improved error handling
