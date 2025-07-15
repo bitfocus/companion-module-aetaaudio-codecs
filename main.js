@@ -1,4 +1,3 @@
-const net = require('net');
 const { InstanceBase, InstanceStatus, runEntrypoint, TCPHelper } = require('@companion-module/base');
 const UpgradeScripts = require('./upgrades');
 const configFields = require('./config');

@@ -1,6 +1,8 @@
 # AETA Audio Codecs Companion Module
 
 This module allows you to control AETA Audio Codecs Bitfocus Companion.
+Files in "Utilities" folder are for dev purpore.
+The dialPad-page.companionconfig is a template that can be used for call numbers input.
 
 ## Features
 
