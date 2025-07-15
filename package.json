@@ -1,5 +1,5 @@
 {
-	"name": "companion-module-aetaaudio-codecs",
+	"name": "aetaaudio-codecs",
 	"version": "1.0.2-beta",
 	"main": "main.js",
 	"scripts": {
