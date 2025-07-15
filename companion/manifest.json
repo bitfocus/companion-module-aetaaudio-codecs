@@ -1,12 +1,12 @@
 {
-	"id": "aeta-audio-codecs",
+	"id": "aetaaudio-codecs",
 	"name": "AETA Audio Codecs",
 	"shortname": "AETA",
 	"description": "Control AETA Audio Codecs",
-	"version": "1.0.0",
+	"version": "0.0.0",
 	"license": "MIT",
-	"repository": "git+https://github.com/bitfocus/companion-module-aeta-codecs.git",
-	"bugs": "https://github.com/bitfocus/companion-module-aeta-codecs/issues",
+	"repository": "git+https://github.com/bitfocus/companion-module-aetaaudio-codecs.git",
+	"bugs": "https://github.com/bitfocus/companion-module-aetaaudio-codecs/issues",
 	"maintainers": [
 		{
 			"name": "Damien",

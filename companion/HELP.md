@@ -2,6 +2,8 @@
 
 This module allows control of AETA Audio Codecs through Companion.
 
+Utilities folder contains reference files for developers as well as a dial pad companion page template for phones/codecs numbers input.
+
 ## Configuration
 
 * **IP Address** - The IP address of your AETA codec
@@ -208,5 +210,5 @@ The module includes comprehensive error handling:
 
 ## Version History
 
-### Version 1.0.0
+### Version 1.0.2-beta
 * Initial release

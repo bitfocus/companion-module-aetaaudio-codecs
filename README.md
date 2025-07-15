@@ -2,6 +2,8 @@
 
 This module allows you to control AETA Audio Codecs Bitfocus Companion.
 
+Utilities folder contains reference files for developers as well as a dial pad companion page template for phones/codecs numbers input.
+
 ## Features
 
 - Full call control (dial, hang up, redial, etc.)
@@ -179,5 +181,5 @@ Handles:
 
 ## Version History
 
-### 1.0.0
+### 1.0.2-beta
 - Initial release
