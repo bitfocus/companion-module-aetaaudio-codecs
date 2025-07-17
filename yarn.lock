@@ -407,6 +407,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"aetaaudio-codecs@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "aetaaudio-codecs@workspace:."
+  dependencies:
+    "@companion-module/base": "npm:~1.11.0"
+    "@companion-module/tools": "npm:^2.1.0"
+    prettier: "npm:^3.3.3"
+  languageName: unknown
+  linkType: soft
+
 "ajv-formats@npm:^2.1.1":
   version: 2.1.1
   resolution: "ajv-formats@npm:2.1.1"
@@ -547,17 +557,6 @@ __metadata:
   checksum: 10c0/74c781a5248c2402a0a3e966a0a2bba3c054aad144f5c023364be83265e796b20565aa9feff624132ff629aa64e16999fa40a743c10c12f7c61e96a794b99288
   languageName: node
   linkType: hard
-
-"companion-module-aeta-scoopy@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "companion-module-aeta-scoopy@workspace:."
-  dependencies:
-    "@companion-module/base": "npm:~1.11.0"
-    "@companion-module/tools": "npm:^2.1.0"
-    net: "npm:^1.0.2"
-    prettier: "npm:^3.3.3"
-  languageName: unknown
-  linkType: soft
 
 "cross-spawn@npm:^7.0.3":
   version: 7.0.6
@@ -1054,13 +1053,6 @@ __metadata:
   version: 2.6.2
   resolution: "neo-async@npm:2.6.2"
   checksum: 10c0/c2f5a604a54a8ec5438a342e1f356dff4bc33ccccdb6dc668d94fe8e5eccfc9d2c2eea6064b0967a767ba63b33763f51ccf2cd2441b461a7322656c1f06b3f5d
-  languageName: node
-  linkType: hard
-
-"net@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "net@npm:1.0.2"
-  checksum: 10c0/7cf9cf8f9c9a2bdadd9002e85da7bd509216ed84b76315aa903a51f15997e4844e7cb8c742f8af434d8cf431564c868d8565106004bbd9ce4223696c9b13d2fd
   languageName: node
   linkType: hard
 
