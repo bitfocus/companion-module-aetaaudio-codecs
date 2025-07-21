@@ -60,26 +60,75 @@ class AETAModule extends InstanceBase {
   async init(config) {
     this.log('info', '***** init ENTRY POINT REACHED *****');
     this.log('debug', `Initializing with config: ${JSON.stringify(config)}`);
-    
-    // Initialize config first
     this.config = config;
-
-    // Initialize base state
     this.updateStatus(InstanceStatus.Connecting);
-
     try {
-      // Initialize module components
       await this.initModule();
-      
-      // Initialize TCP connection last
       await this.initTCP();
-      
+      // Wait for TCP connection
+      await this.waitForSocketConnect();
+      // Authenticate
+      let pwdCmd = 'AT#PWD=';
+      if (this.config.password && this.config.password.length > 0) {
+        pwdCmd += this.config.password;
+      }
+      await this.sendRawCommandAndWait(pwdCmd);
+      // Activate event notifications for codec 1
+      await this.sendRawCommandAndWait('AT#ESTABLISHED_1=1');
+      await this.sendRawCommandAndWait('AT#RINGING_1=1');
+      await this.sendRawCommandAndWait('AT#CALLING_1=1');
+      await this.sendRawCommandAndWait('AT#RELEASED_1=1');
+      // Fetch all codec parameters using AT&Vx commands
+      const vCommands = [
+        'AT&V1', 'AT&V2', 'AT&V3', 'AT&V4', 'AT&V5', 'AT&V6', 'AT&V7', 'AT&V8', 'AT&V9',
+        'AT&V10', 'AT&V11', 'AT&V20', 'AT&V21'
+      ];
+      for (const cmd of vCommands) {
+        await this.sendRawCommandAndWait(cmd);
+      }
       this.isInitialized = true;
+      this.updateStatus(InstanceStatus.Ok);
       this.log('info', 'Module initialization completed successfully');
     } catch (error) {
       this.log('error', `Initialization failed: ${error.message}`);
       this.updateStatus(InstanceStatus.ConnectionFailure);
     }
+  }
+  // Wait for TCP socket to connect
+  async waitForSocketConnect(timeout = 5000) {
+    return new Promise((resolve, reject) => {
+      const start = Date.now();
+      const check = () => {
+        if (this.socket && this.socket.isConnected) {
+          resolve();
+        } else if (Date.now() - start > timeout) {
+          reject(new Error('TCP connection timeout'));
+        } else {
+          setTimeout(check, 100);
+        }
+      };
+      check();
+    });
+  }
+
+  // Send command and wait for response (simple implementation)
+  async sendRawCommandAndWait(command, timeout = 1000) {
+    return new Promise((resolve, reject) => {
+      let responded = false;
+      const onData = (data) => {
+        responded = true;
+        this.socket.off('data', onData);
+        resolve(data);
+      };
+      this.socket.on('data', onData);
+      this.sendRawCommand(command);
+      setTimeout(() => {
+        if (!responded) {
+          this.socket.off('data', onData);
+          reject(new Error(`Timeout waiting for response to ${command}`));
+        }
+      }, timeout);
+    });
   }
 
   // Force config fields to be updated in the interface
@@ -151,6 +200,7 @@ class AETAModule extends InstanceBase {
         this.queueCommand('AT&V7'); // External devices configuration
         this.queueCommand('AT&V8'); // Auxiliary functions configuration
         this.queueCommand('AT&V9'); // Network configuration
+        this.queueCommand('AT&V11'); // Event activation state
       } else {
         this.log('warn', 'Socket not connected during polling interval');
       }
@@ -218,34 +268,55 @@ class AETAModule extends InstanceBase {
         this.log('info', `Connected to ${this.config.ip}:${this.config.port}`);
         // Send initial command right after connection
         if (this.socket?.isConnected) {
-          this.socket.send('ATI\r\n').catch((e) => {
+          this.socket.send('ATI').catch((e) => {
             this.log('error', `Failed to send initial command: ${e.message}`);
           });
         }
       });
 
       this.socket.on('data', (data) => {
-        // Add incoming data to buffer
-        this.dataBuffer += data.toString();
-        
-        // Process complete messages from buffer
-        let newlineIndex;
-        while ((newlineIndex = this.dataBuffer.indexOf('\r')) !== -1 || (newlineIndex = this.dataBuffer.indexOf('\n')) !== -1) {
-          const msg = this.dataBuffer.substring(0, newlineIndex).trim();
-          this.dataBuffer = this.dataBuffer.substring(newlineIndex + 1);
-          
-          if (msg.length > 0) {
-            this.log('debug', `Received: ${msg}`);
-            
+        // Log the rawest possible incoming data (Buffer)
+        this.log('info', `[CODEC RAW]`, data);
+
+        // Add incoming data to buffer using latin1 encoding
+        this.dataBuffer += data.toString('latin1');
+
+        // Log every processed TCP message received (latin1 string)
+        this.log('info', `[CODEC] ${data.toString('latin1').trim()}`);
+
+        // Split buffer on all line endings (\n, \r)
+        let lines = this.dataBuffer.split(/\n|\r/);
+        this.dataBuffer = lines.pop(); // Save incomplete line for next chunk
+
+        for (const msg of lines) {
+          const trimmedMsg = msg.trim();
+          if (trimmedMsg.length > 0) {
             // If we get any valid response, mark as connected and initialize
-            if (!this.feedbackState.codecConnected && msg.length > 0) {
+            if (!this.feedbackState.codecConnected && trimmedMsg.length > 0) {
               this.log('info', 'Got response from codec - marking as connected');
               this.feedbackState.codecConnected = true;
               this.updateStatus(InstanceStatus.Ok);
               this.initializeCodec();
             }
-            
-            this.parseResponse(msg);
+            this.parseResponse(trimmedMsg);
+          }
+        }
+
+        // Handle unsolicited events that may not be terminated by \r or \n
+        // List of known unsolicited event patterns
+        const unsolicitedEvents = [
+          '$RINGING_1',
+          '$CALLING_1',
+          '$ESTABLISHED_1',
+          '$RELEASED_1',
+          'CONNECT 1'
+        ];
+
+        for (const event of unsolicitedEvents) {
+          if (this.dataBuffer.includes(event)) {
+            this.log('info', `Detected unsolicited event in buffer: ${event}`);
+            this.parseResponse(event);
+            // Do NOT remove the event from buffer, keep buffer intact for further processing
           }
         }
       });
@@ -265,46 +336,8 @@ class AETAModule extends InstanceBase {
   }
 
   initializeCodec() {
-    this.log('info', 'Initializing codec');
-    // Send initialization commands in sequence with small delays
-    setTimeout(() => {
-      if (this.config.password) {
-        this.sendRawCommand(`AT#PWD=${this.config.password}`);
-      }
-      setTimeout(() => {
-        this.sendRawCommand('AT#RINGING_1=1');
-        setTimeout(() => {
-          this.sendRawCommand('AT#CALLING_1=1');
-          setTimeout(() => {
-            this.sendRawCommand('AT#ESTABLISHED_1=1');
-            setTimeout(() => {
-              this.sendRawCommand('AT#RELEASED_1=1');
-              setTimeout(() => {
-                // Get general configuration
-                this.sendRawCommand('AT&V');   // Basic configuration
-                this.sendRawCommand('AT#SUP'); // Get current status including N1
-                this.sendRawCommand('AT&V0');  // Last connected numbers
-                this.sendRawCommand('AT&V1');  // Line configuration
-                this.sendRawCommand('AT&V2');  // ISDN configuration
-                this.sendRawCommand('AT&V3');  // Audio configuration
-                this.sendRawCommand('AT&V4');  // X24/V11 configuration
-                this.sendRawCommand('AT&V5');  // Mobile configuration
-                this.sendRawCommand('AT&V6');  // VoIP/IP configuration
-                this.sendRawCommand('AT&V7');  // External devices configuration
-                this.sendRawCommand('AT&V8');  // Auxiliary functions configuration
-                this.sendRawCommand('AT&V9');  // Network configuration
-                // Only start polling if it's enabled in config
-                if (this.config.enablePolling) {
-                  this.startPolling();
-                } else {
-                  this.log('debug', 'Polling disabled in config - not starting polling');
-                }
-              }, 100);
-            }, 100);
-          }, 100);
-        }, 100);
-      }, 100);
-    }, 100);
+    // No longer used: replaced by async init flow
+    this.log('info', 'initializeCodec() is now handled by async init()');
   }
 
   sendRawCommand(command) {
@@ -342,17 +375,7 @@ class AETAModule extends InstanceBase {
       try {
         // Remove all listeners first to prevent any callbacks during cleanup
         this.socket.removeAllListeners();
-        
-        // Close the socket gracefully if it's still connected
-        if (this.socket?.isConnected) {
-          await new Promise((resolve) => {
-            this.socket.end(() => {
-              resolve();
-            });
-          });
-        }
-        
-        // Force destroy after graceful close
+        // Directly destroy the socket
         this.socket.destroy();
       } catch (error) {
         this.log('error', `Socket cleanup error: ${error.message}`);
@@ -463,6 +486,7 @@ class AETAModule extends InstanceBase {
       this.queueCommand('AT&V7'); // External devices configuration
       this.queueCommand('AT&V8'); // Auxiliary functions configuration
       this.queueCommand('AT&V9'); // Network configuration
+      this.queueCommand('AT&V11'); // Event activation state
     } else {
       this.log('warn', 'Cannot refresh data - codec not connected');
     }
@@ -486,86 +510,11 @@ class AETAModule extends InstanceBase {
       if (match) {
         const number = match[1];
         this.setVariableValues({ lastConnectedNumber: number });
-        this.log('debug', `Last connected number updated from N1: ${number}`);
+        // Removed variable update log
       }
       return;
     }
 
-    // Handle grouped/multi-value and device-specific responses
-    if (response.startsWith('#LVL=')) {
-      // #LVL=n,p,q,r (TxL, TxR, RxL, RxR)
-      const [n, p, q, r] = response.substring(5).split(',').map(Number);
-      this.setVariableValues({
-        audioLevel: `TxL: -${n}dBFS, TxR: -${p}dBFS, RxL: -${q}dBFS, RxR: -${r}dBFS`
-      });
-      return;
-    }
-    if (response.startsWith('ALA:D1=')) {
-      const match = response.match(/D1=(\d+),D2=(\d+),D3=(\d+)/);
-      if (match) {
-        const [d1, d2, d3] = match.slice(1);
-        this.setVariableValues({ alarmD1: d1, alarmD2: d2, alarmD3: d3 });
-      }
-      return;
-    }
-    if (response.startsWith('USI:')) {
-      // Options available in the device (AT#SUP b7)
-      // Example: USI: DEP=1,AES=1,V8K=1,FIL=2,DSP=0,RSC=1,AL3=1,TDA=0,A64=0,CCS=1
-      const fields = response.replace('USI:', '').split(',');
-      const usiVars = {};
-      fields.forEach(f => {
-        const [k, v] = f.split('=');
-        if (k && v) usiVars[k.trim()] = v.trim();
-      });
-      if (usiVars.AES) this.setVariableValues({ aesSamplingRate: usiVars.AES === '1' ? 'Installed' : 'Absent' });
-      if (usiVars.V8K) this.setVariableValues({ auxAudioChannel: usiVars.V8K === '1' ? 'Installed' : 'Absent' });
-      if (usiVars.AL3) this.setVariableValues({ codingAlgorithm: usiVars.AL3 === '1' ? 'MPEG Layer 3' : 'Not available' });
-      if (usiVars.TDA) this.setVariableValues({ dataChannel: usiVars.TDA === '1' ? 'Installed' : 'Not available' });
-      return;
-    }
-    if (response.startsWith('#LAN=')) {
-      const lan = response.split('=')[1];
-      const langs = { '1': 'English', '2': 'French', '3': 'German', '4': 'Spanish' };
-      this.setVariableValues({ language: langs[lan] || lan });
-      return;
-    }
-    if (response.startsWith('#ISDN=')) {
-      const isdn = response.split('=')[1];
-      const isdns = { '1': 'Euro ISDN', '2': 'US ISDN', '3': 'Japan ISDN' };
-      this.setVariableValues({ isdnType: isdns[isdn] || isdn });
-      return;
-    }
-    if (response.startsWith('#MAL1=') || response.startsWith('#MAL2=') || response.startsWith('#MAL3=')) {
-      const [key, value] = response.split('=');
-      this.setVariableValues({ [key.toLowerCase()]: value });
-      return;
-    }
-    if (response.startsWith('#OPT')) {
-      const match = response.match(/#OPT(\w+)=(\d+)/);
-      if (match) {
-        const [, opt, val] = match;
-        this.setVariableValues({ [`option_${opt}`]: val === '1' ? 'Installed' : 'Not installed' });
-      }
-      return;
-    }
-    if (response.startsWith('#EVENT_')) {
-      const match = response.match(/#EVENT_(\d+)=(\d+)/);
-      if (match) {
-        const [, idx, val] = match;
-        this.setVariableValues({ [`event_${idx}`]: val === '1' ? 'Active' : 'Masked' });
-      }
-      return;
-    }
-    if (response.startsWith('#CREG=')) {
-      const val = response.split('=')[1];
-      this.setVariableValues({ mobileRegistered: val === '1' ? 'Registered' : 'Not registered' });
-      return;
-    }
-    if (response.startsWith('#CNTI=')) {
-      const val = response.split('=')[1];
-      this.setVariableValues({ mobileNetwork: val });
-      return;
-    }
     // Rest of the parsing logic
     if (response === 'OK') {
       this.setVariableValues({ connectionStatus: 'Connected' });
@@ -796,9 +745,7 @@ class AETAModule extends InstanceBase {
             break;
           default:
             // Only log if it's not an AT command echo or continuation marker
-            if (!key.startsWith('AT') && !key.startsWith('-C')) {
-              this.log('debug', `Received parameter ${key}=${value}`);
-            }
+            // Removed variable update log
             break;
         }
       } else if (response.startsWith('COD1:S=')) {
@@ -817,7 +764,7 @@ class AETAModule extends InstanceBase {
         this.setVariableValues({ alarmD1: d1, alarmD2: d2, alarmD3: d3 });
       } else if (!response.startsWith('AT') && !response.startsWith('-C') && response !== '') {
         // Only log unhandled responses that aren't AT command echoes, continuation markers, or empty lines
-        this.log('debug', `Response: "${response}"`);
+        // Removed variable update log
       }
     }
     this.checkFeedbacks('codecConnected');

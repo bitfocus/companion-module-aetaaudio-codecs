@@ -181,5 +181,5 @@ Handles:
 
 ## Version History
 
-### 1.0.2-beta
-- Initial release
+### 1.0.3-beta
+- fixed call states feedbacks
