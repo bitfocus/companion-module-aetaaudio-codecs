@@ -1,6 +1,52 @@
 module.exports = {
-	getActionDefinitions(instance) {
-	  return {
+  getActionDefinitions(instance) {
+	return {
+	  keypad: {
+		name: 'Keypad',
+		description: 'Store a concatenated value into keyPadInput to simulate dial pad.',
+		options: [
+
+		  { 
+			type: 'checkbox',
+			label: 'Clear Keypad',
+			id: 'clear',
+			default: false,
+		  },
+		  
+		  {
+			type: 'textinput',
+			label: 'Key/Number to Add',
+			id: 'key',
+			default: '',
+			tooltip: 'Enter a digit or character to add to the dial pad input',
+			isVisible: (options) => !options.clear,
+		  },
+
+		],
+		callback: async (event) => {
+		  // If clear is checked, clear the variable and exit
+		  if (event.options.clear) {
+			instance.setVariableValues({ keyPadInput: '' });
+			instance.log('info', 'Keypad input cleared');
+			return;
+		  }
+		  // Otherwise, concatenate the key to the variable
+		  let key = event.options.key;
+		  if (instance.parseVariables) {
+			key = await instance.parseVariables(key);
+		  }
+		  if (!key) {
+			instance.log('warn', 'No key provided for keypad action');
+			return;
+		  }
+		  // Get current value
+		  let current = instance.getVariableValue ? instance.getVariableValue('keyPadInput') : '';
+		  if (typeof current !== 'string') current = '';
+		  const newValue = current + key;
+		  instance.setVariableValues({ keyPadInput: newValue });
+		  instance.log('info', `Keypad input updated: ${newValue}`);
+		},
+	  },
 		dial: {
 		  name: 'Dial Number',
 		  description: 'Initiate a call to a phone number or SIP URI using the configured codec. You can enter a value or use a variable.',

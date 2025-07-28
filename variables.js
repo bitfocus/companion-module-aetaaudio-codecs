@@ -88,7 +88,8 @@ module.exports = {
 		{ variableId: 'testLoop', name: 'Test Loop Status' },
 		{ variableId: 'alarmD1', name: 'Alarm Byte 1' },
 		{ variableId: 'alarmD2', name: 'Alarm Byte 2' },
-		{ variableId: 'alarmD3', name: 'Alarm Byte 3' }
+		{ variableId: 'alarmD3', name: 'Alarm Byte 3' },
+		{ variableId: 'keyPadInput', name: 'Keypad Input' }
 	  ]);
   
 	  this.setVariableValues({
@@ -176,7 +177,8 @@ module.exports = {
 		testLoop: 'Unknown',
 		alarmD1: 'Unknown',
 		alarmD2: 'Unknown',
-		alarmD3: 'Unknown'
+		alarmD3: 'Unknown',
+		keyPadInput: ''
 	  });
 	},
   };

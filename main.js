@@ -4,6 +4,7 @@ const configFields = require('./config');
 const actions = require('./actions');
 const feedbacks = require('./feedbacks');
 const variables = require('./variables');
+const { GetPresetsList } = require('./presets');
 
 class AETAModule extends InstanceBase {
   constructor(internal) {
@@ -36,6 +37,11 @@ class AETAModule extends InstanceBase {
     this.init_actions();
     this.init_feedbacks();
     this.init_variables();
+    // Set preset definitions
+    if (this.setPresetDefinitions) {
+      this.setPresetDefinitions(GetPresetsList());
+      this.log('debug', 'Preset definitions set');
+    }
   }
 
   init_actions() {
