@@ -9,21 +9,21 @@ module.exports = {
 		{ variableId: 'ipQuality', name: 'IP Quality' }, // AT#IPQ
 		{ variableId: 'packetReplication', name: 'Packet Replication' }, // AT#REP
 		{ variableId: 'codingBitRate', name: 'Coding Bit Rate' }, // AT#CHD
-		{ variableId: 'frequency', name: 'Coding Frequency' }, // AT#FRE
-		{ variableId: 'inputGain', name: 'Input Gain' }, // AT#GIN
-		{ variableId: 'outputGain', name: 'Output Gain' }, // AT#GOUT
+		{ variableId: 'codingSamplingRate', name: 'Coding Sampling Rate' }, // AT#FRE
+		{ variableId: 'maxInputLevel', name: 'Maximum Input Level' }, // AT#GIN
+		{ variableId: 'maxOutputLevel', name: 'Maximum Output Level' }, // AT#GOUT
 		{ variableId: 'localEcho', name: 'Local Echo' }, // ATE
 		{ variableId: 'dialMethod', name: 'Dial Method' }, // AT#DIA
 		{ variableId: 'dialTone', name: 'Dial Tone' }, // AT#TON
-		{ variableId: 'callFiltering', name: 'Call Filtering' }, // AT#TAE
+		{ variableId: 'incomingCallFilter', name: 'Incoming Call Filter' }, // AT#TAE
 		{ variableId: 'proprietaryFilter', name: 'Proprietary ISDN Filter' }, // AT#TFS
 		{ variableId: 'hlc', name: 'HLC Enabling' }, // AT#HLC
 		{ variableId: 'autoRedial', name: 'Auto Redial' }, // AT#RED
 		{ variableId: 'redialRetries', name: 'Redial Retries' }, // AT#NBR
 		{ variableId: 'redialWaitTime', name: 'Redial Wait Time' }, // AT#TTR
-		{ variableId: 'loopControl', name: 'Loop Control' }, // AT#LCT
-		{ variableId: 'backupNetwork', name: 'Backup Network' }, // AT#LLBC
-		{ variableId: 'passiveBackupMode', name: 'Passive Backup Mode' }, // AT#LLBR
+		{ variableId: 'loopControlMode', name: 'Loop Control Mode' }, // AT#LCT
+		{ variableId: 'backupCallNetwork', name: 'Backup Call Network' }, // AT#LLBC
+		{ variableId: 'backupReceiveMode', name: 'Backup Receive Mode' }, // AT#LLBR
 		{ variableId: 'dhcp', name: 'DHCP Mode' }, // AT#DHCP
 		{ variableId: 'ipAddress', name: 'IP Address' }, // AT#IP
 		{ variableId: 'ipMask', name: 'IP Mask' }, // AT#IPM
@@ -34,9 +34,9 @@ module.exports = {
 		{ variableId: 'errorCorrection', name: 'Error Correction' }, // AT#COR
 		{ variableId: 'clockMode', name: 'Clock Mode' }, // AT#CLK
 		{ variableId: 'lineLevel', name: 'Line Level' }, // AT#LEV
-		{ variableId: 'speed', name: 'Speed' }, // AT#SPD
-		{ variableId: 'dataChannel', name: 'Data Channel' }, // AT#CDA
-		{ variableId: 'baudRate', name: 'Baud Rate' }, // AT#BAU
+		{ variableId: 'potsSpeed', name: 'POTS Speed' }, // AT#SPD
+		{ variableId: 'dataChannelEnabled', name: 'Data Channel Enabled' }, // AT#CDA
+		{ variableId: 'dataChannelBaudRate', name: 'Data Channel Baud Rate' }, // AT#BAU
 		{ variableId: 'relayTransmission', name: 'Relay Transmission' }, // AT#REL
 		{ variableId: 'gpi1', name: 'GPI 1 State' }, // AT#GPI1
 		{ variableId: 'gpi2', name: 'GPI 2 State' }, // AT#GPI2
@@ -51,8 +51,18 @@ module.exports = {
 		{ variableId: 'channelPanning', name: 'Channel Panning' }, // AT#CPM
 		{ variableId: 'outputSignal', name: 'Output Signal' }, // AT#OSEL
 		{ variableId: 'inputPad', name: 'Input Pad' }, // AT#PADi
-		{ variableId: 'headphoneRouting', name: 'Headphone Routing' }, // AT#CCRi
+		{ variableId: 'coordinationChannelRouting', name: 'Coordination Channel Routing' }, // AT#CCRi
 		{ variableId: 'smsMessage', name: 'Last SMS Message' }, // AT#SMS
+		// Audio Input Controls
+		{ variableId: 'inputGainStep1', name: 'Input 1 Gain Step' }, // AT#GIS1
+		{ variableId: 'inputGainStep2', name: 'Input 2 Gain Step' }, // AT#GIS2
+		{ variableId: 'inputGainStep3', name: 'Input 3 Gain Step' }, // AT#GIS3
+		{ variableId: 'phantomPower1', name: 'Input 1 Phantom Power' }, // AT#PWR1
+		{ variableId: 'phantomPower2', name: 'Input 2 Phantom Power' }, // AT#PWR2
+		{ variableId: 'phantomPower3', name: 'Input 3 Phantom Power' }, // AT#PWR3
+		{ variableId: 'limiter1', name: 'Input 1 Limiter' }, // AT#LIM1
+		{ variableId: 'limiter2', name: 'Input 2 Limiter' }, // AT#LIM2
+		{ variableId: 'limiter3', name: 'Input 3 Limiter' }, // AT#LIM3
 		// Call status variables
 		{ variableId: 'ringing', name: 'Ringing Status' },
 		{ variableId: 'calling', name: 'Calling Status' },
@@ -65,6 +75,10 @@ module.exports = {
 		{ variableId: 'audioStatus', name: 'Audio Status' },
 		{ variableId: 'jitterBuffer', name: 'Jitter Buffer Status' },
 		{ variableId: 'audioLevel', name: 'Audio Level' },
+		{ variableId: 'audioLevelTxLeft', name: 'Audio Level Tx Left' },
+		{ variableId: 'audioLevelTxRight', name: 'Audio Level Tx Right' },
+		{ variableId: 'audioLevelRxLeft', name: 'Audio Level Rx Left' },
+		{ variableId: 'audioLevelRxRight', name: 'Audio Level Rx Right' },
 		{ variableId: 'lastConnectedNumber', name: 'Last Connected Number' },
 		// Dial/Location numbers (keep for compatibility)
 		{ variableId: 'number1', name: 'Dial Number 1' },
@@ -101,21 +115,21 @@ module.exports = {
 		ipQuality: 'Unknown',
 		packetReplication: 'Unknown',
 		codingBitRate: 'Unknown',
-		frequency: 'Unknown',
-		inputGain: 'Unknown',
-		outputGain: 'Unknown',
+		codingSamplingRate: 'Unknown',
+		maxInputLevel: 'Unknown',
+		maxOutputLevel: 'Unknown',
 		localEcho: 'Unknown',
 		dialMethod: 'Unknown',
 		dialTone: 'Unknown',
-		callFiltering: 'Unknown',
+		incomingCallFilter: 'Unknown',
 		proprietaryFilter: 'Unknown',
 		hlc: 'Unknown',
 		autoRedial: 'Unknown',
 		redialRetries: 'Unknown',
 		redialWaitTime: 'Unknown',
-		loopControl: 'Unknown',
-		backupNetwork: 'Unknown',
-		passiveBackupMode: 'Unknown',
+		loopControlMode: 'Unknown',
+		backupCallNetwork: 'Unknown',
+		backupReceiveMode: 'Unknown',
 		dhcp: 'Unknown',
 		ipAddress: 'Unknown',
 		ipMask: 'Unknown',
@@ -126,9 +140,9 @@ module.exports = {
 		errorCorrection: 'Unknown',
 		clockMode: 'Unknown',
 		lineLevel: 'Unknown',
-		speed: 'Unknown',
-		dataChannel: 'Unknown',
-		baudRate: 'Unknown',
+		potsSpeed: 'Unknown',
+		dataChannelEnabled: 'Unknown',
+		dataChannelBaudRate: 'Unknown',
 		relayTransmission: 'Unknown',
 		gpi1: 'Unknown',
 		gpi2: 'Unknown',
@@ -143,8 +157,17 @@ module.exports = {
 		channelPanning: 'Unknown',
 		outputSignal: 'Unknown',
 		inputPad: 'Unknown',
-		headphoneRouting: 'Unknown',
+		coordinationChannelRouting: 'Unknown',
 		smsMessage: '',
+		inputGainStep1: 'Unknown',
+		inputGainStep2: 'Unknown',
+		inputGainStep3: 'Unknown',
+		phantomPower1: 'Unknown',
+		phantomPower2: 'Unknown',
+		phantomPower3: 'Unknown',
+		limiter1: 'Unknown',
+		limiter2: 'Unknown',
+		limiter3: 'Unknown',
 		ringing: 'False',
 		calling: 'False',
 		established: 'False',
@@ -156,6 +179,10 @@ module.exports = {
 		audioStatus: 'Unknown',
 		jitterBuffer: 'Unknown',
 		audioLevel: 'Unknown',
+		audioLevelTxLeft: 'Unknown',
+		audioLevelTxRight: 'Unknown',
+		audioLevelRxLeft: 'Unknown',
+		audioLevelRxRight: 'Unknown',
 		lastConnectedNumber: 'Unknown',
 		number1: 'Unknown',
 		number2: 'Unknown',
