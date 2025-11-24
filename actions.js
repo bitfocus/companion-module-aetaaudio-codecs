@@ -349,17 +349,17 @@ module.exports = {
 			  instance.log('info', `Audio monitoring ${state === '1' ? 'started' : 'stopped'}`);
 			},
 		  },
-		  setInputGain: {
-			name: 'Set Input Gain',
-			description: 'Adjust the analogue audio input gain (dB).',
+		  setMaxInputLevel: {
+			name: 'Set Maximum Input Level',
+			description: 'Adjust the maximum analogue audio input level (dBu).',
 			options: [
 			  {
 				type: 'number',
-				label: 'Gain (dB)',
+				label: 'Max Level (dBu)',
 				id: 'gain',
 				default: 0,
-				min: -12,
-				max: 12,
+				min: 0,
+				max: 22,
 				required: true
 			  }
 			],
@@ -367,7 +367,7 @@ module.exports = {
 			  if (!instance.socket?.isConnected) return;
 			  try {
 				await instance.sendCommand(`AT#GIN=${event.options.gain}`);
-				instance.log('info', `Input gain set to ${event.options.gain}`);
+				instance.log('info', `Max input level set to ${event.options.gain}`);
 				instance.debouncedRefreshData(); // Use debounced version
 			  } catch (error) {
 				instance.log('error', `Failed to set input gain: ${error.message}`);
@@ -458,16 +458,16 @@ module.exports = {
 			}
 		  }
 		},
-		setOutputGain: {
-			name: 'Set Output Gain',
-			description: 'Adjust the analogue audio output gain (dBu).',
+		setMaxOutputLevel: {
+			name: 'Set Maximum Output Level',
+			description: 'Adjust the maximum analogue audio output level (dBu).',
 			options: [
 			  {
 				type: 'number',
-				label: 'Output Gain (dBu)',
+				label: 'Max Level (dBu)',
 				id: 'gain',
 				default: 0,
-				min: -11,
+				min: 0,
 				max: 22,
 				required: true
 			  }
@@ -476,7 +476,7 @@ module.exports = {
 			  if (!instance.socket?.isConnected) return;
 			  try {
 				await instance.sendCommand(`AT#GOUT=${event.options.gain}`);
-				instance.log('info', `Output gain set to ${event.options.gain}`);
+				instance.log('info', `Max output level set to ${event.options.gain}`);
 				instance.debouncedRefreshData();
 			  } catch (error) {
 				instance.log('error', `Failed to set output gain: ${error.message}`);
@@ -683,13 +683,13 @@ module.exports = {
 			  }
 			}
 		  },
-		  setISDNCallFilter: {
-			name: 'Set ISDN Call Filter',
+		  setIncomingCallFilter: {
+			name: 'Set Incoming Call Filter',
 			description: 'Set the ISDN call filtering mode for incoming calls.',
 			options: [
 			  {
 				type: 'dropdown',
-				label: 'Call Filtering Mode',
+				label: 'Filtering Mode',
 				id: 'mode',
 				default: '0',
 				choices: [
@@ -703,7 +703,7 @@ module.exports = {
 			  if (!instance.socket?.isConnected) return;
 			  try {
 				await instance.sendCommand(`AT#TAE=${event.options.mode}`);
-				instance.log('info', `ISDN call filter set to mode ${event.options.mode}`);
+				instance.log('info', `Incoming call filter set to mode ${event.options.mode}`);
 				instance.debouncedRefreshData();
 			  } catch (error) {
 				instance.log('error', `Failed to set ISDN call filter: ${error.message}`);
@@ -795,6 +795,121 @@ module.exports = {
 				instance.debouncedRefreshData();
 			  } catch (error) {
 				instance.log('error', `Failed to set auto redial: ${error.message}`);
+			  }
+			}
+		  },
+		  setInputGainStep: {
+			name: 'Set Input Gain Step',
+			description: 'Set the input gain step (Mic/Line level).',
+			options: [
+			  {
+				type: 'dropdown',
+				label: 'Channel',
+				id: 'channel',
+				default: '1',
+				choices: [
+				  { id: '1', label: 'Channel 1' },
+				  { id: '2', label: 'Channel 2' },
+				  { id: '3', label: 'Channel 3' }
+				]
+			  },
+			  {
+				type: 'dropdown',
+				label: 'Gain Step',
+				id: 'step',
+				default: '0',
+				choices: [
+				  { id: '0', label: '0 dB' },
+				  { id: '1', label: '16 dB' },
+				  { id: '2', label: '32 dB' },
+				  { id: '3', label: '48 dB' }
+				]
+			  }
+			],
+			callback: async (event) => {
+			  if (!instance.socket?.isConnected) return;
+			  try {
+				await instance.sendCommand(`AT#GIS${event.options.channel}=${event.options.step}`);
+				instance.log('info', `Input ${event.options.channel} gain step set to ${event.options.step}`);
+				instance.debouncedRefreshData();
+			  } catch (error) {
+				instance.log('error', `Failed to set input gain step: ${error.message}`);
+			  }
+			}
+		  },
+		  setPhantomPower: {
+			name: 'Set Phantom Power',
+			description: 'Configure phantom power for an input channel.',
+			options: [
+			  {
+				type: 'dropdown',
+				label: 'Channel',
+				id: 'channel',
+				default: '1',
+				choices: [
+				  { id: '1', label: 'Channel 1' },
+				  { id: '2', label: 'Channel 2' },
+				  { id: '3', label: 'Channel 3' }
+				]
+			  },
+			  {
+				type: 'dropdown',
+				label: 'Power Mode',
+				id: 'mode',
+				default: '0',
+				choices: [
+				  { id: '0', label: 'Off' },
+				  { id: '1', label: 'Phantom 48V' },
+				  { id: '2', label: 'Phantom 12V' },
+				  { id: '3', label: 'T12' }
+				]
+			  }
+			],
+			callback: async (event) => {
+			  if (!instance.socket?.isConnected) return;
+			  try {
+				await instance.sendCommand(`AT#PWR${event.options.channel}=${event.options.mode}`);
+				instance.log('info', `Input ${event.options.channel} phantom power set to ${event.options.mode}`);
+				instance.debouncedRefreshData();
+			  } catch (error) {
+				instance.log('error', `Failed to set phantom power: ${error.message}`);
+			  }
+			}
+		  },
+		  setInputLimiter: {
+			name: 'Set Input Limiter',
+			description: 'Enable or disable the limiter for an input channel.',
+			options: [
+			  {
+				type: 'dropdown',
+				label: 'Channel',
+				id: 'channel',
+				default: '1',
+				choices: [
+				  { id: '1', label: 'Channel 1' },
+				  { id: '2', label: 'Channel 2' },
+				  { id: '3', label: 'Channel 3' }
+				]
+			  },
+			  {
+				type: 'dropdown',
+				label: 'State',
+				id: 'state',
+				default: '0',
+				choices: [
+				  { id: '0', label: 'Off' },
+				  { id: '1', label: 'On' }
+				]
+			  }
+			],
+			callback: async (event) => {
+			  if (!instance.socket?.isConnected) return;
+			  try {
+				await instance.sendCommand(`AT#LIM${event.options.channel}=${event.options.state}`);
+				instance.log('info', `Input ${event.options.channel} limiter set to ${event.options.state}`);
+				instance.debouncedRefreshData();
+			  } catch (error) {
+				instance.log('error', `Failed to set input limiter: ${error.message}`);
 			  }
 			}
 		  },
