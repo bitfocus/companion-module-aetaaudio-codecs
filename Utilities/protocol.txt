@@ -1,0 +1,2723 @@
+                                                                                        AARC
+                                                                                 AAS Remote Control
+
+
+                                                      Remote control protocol
+
+
+                                                                    Reference Manual
+
+
+
+
+                                                                          AETA AUDIO SYSTEMS
+                               18-22, avenue Edouard Herriot – Kepler 4 – 92350 Le Plessis Robinson – FRANCE
+                                Tél. +33 1 41 36 12 00 – Fax +33 1 41 36 12 69 – Web: http://www.aeta-audio.com
+
+
+  55000 047 – Ed. P                                          AARC Remote Control Protocol - Reference Manual
+This document is the property of AETA and can not be duplicated without authorisation    March 2018            55 000 047-P AARC protocol.docx
+                                                                      Table of contents
+      1.        Introduction ....................................................................................................................... 1
+      2.        General principles ............................................................................................................. 1
+           2.1. Serial remote control port ............................................................................................................. 1
+           2.2. Ethernet interface ......................................................................................................................... 1
+           2.3. AT interpreter ............................................................................................................................... 2
+           2.4. Opening/closing a control session ................................................................................................ 2
+           2.5. Debug information ....................................................................................................................... 2
+      3.        Summary list of AT commands ....................................................................................... 3
+      4.        Details of AT commands syntax ...................................................................................... 7
+           4.1. General commands ....................................................................................................................... 7
+           4.2. Session and password management.............................................................................................. 9
+           4.3. Call control ................................................................................................................................. 10
+           4.4. IP network settings ..................................................................................................................... 17
+           4.5. Coding configuration.................................................................................................................. 20
+           4.6. Auxiliary functions ..................................................................................................................... 26
+           4.7. Audio configuration ................................................................................................................... 30
+           4.8. System and test commands......................................................................................................... 36
+           4.9. Country configuration commands .............................................................................................. 41
+           4.10. Memory management ............................................................................................................... 43
+           4.11. Configuration and status display .............................................................................................. 45
+      5.        AT command answers .................................................................................................... 59
+           5.1. Answer messages ....................................................................................................................... 59
+           5.2. Unsolicited event messages ........................................................................................................ 59
+           5.3. Messages for audio levels........................................................................................................... 59
+           5.4. Error codes ................................................................................................................................. 60
+      6.        AT command alphabetical list ....................................................................................... 61
+
+
+
+
+  55000 047 – Ed. P                                          AARC Remote Control Protocol - Reference Manual
+This document is the property of AETA and can not be duplicated without authorisation   March 2018                                              55 000 047-P AARC protocol.docx
+      1. Introduction
+      Some AETA codecs can be managed and supervised via remote control in a “command line” mode. The
+      remote control interface uses the AARC (AAS Remote Control) protocol.
+      This document is a reference manual describing this protocol and the commands allowing the
+      management and supervision of an AETA codec thanks to this protocol.
+      As the different codecs have different features and capabilities, some commands may not apply to all
+      codecs; similarly, the validity domain for a parameter may differ depending on the model. Such specific
+      behaviour is mentioned whenever possible, but this document is not guaranteed to be exhaustive. For
+      thorough understanding of the functions and operating modes of a given codec and its specific capabilities
+      or limitations, the reader should refer to the user manual of this unit.
+      The following are concerned by the described protocol:
+            HIFISCOOP 3 5AS (also referred to as «HS3» in the following)
+            SCOOP 3 5AS (also referred to as «S3» in the following)
+            SCOOP 4+ (also referred to as «S4» in the following)
+            SCOOPY+ (also referred to as “S+” in the following)
+            SCOOP 5 and SCOOP 5 IP (also referred to as “S5” in the following)
+            Scoop5 S, Scoop5 S-IP and Scoopy+ S (referred as “SxS” in the following)
+      Other products are not remote controllable, or feature older versions of the protocol (incompatible or
+      partially compatible). Consult us for additional information regarding those products.
+
+
+      2. General principles
+      The protocol used is similar to the Hayes AT command protocol. It is used for remote controlling
+      (almost) all the functions of the codec, with similar capability as when using the front panel keyboard and
+      display.
+      Two physical interfaces can be used, depending on the product.
+
+                         2.1. Serial remote control port
+      The control port is an asynchronous serial port enabling the connection of the device to a terminal or PC.
+      Note: on older units the serial port could also be used for downloading software updates to the unit.
+
+                         2.2. Ethernet interface
+      Some products also feature remote control via an Ethernet interface and a TCP/IP connection. The
+      protocol is the same in spite of the different physical interface. Commands and answers are exchanged
+      inside a TCP/IP session established between the controlling device and the TCP port of the controlled
+      codec.
+      An exception to this exists (products other than HIFISCOOP 3 5AS and SCOOP 3 5AS): UDP is used to
+      transmit (unsolicited) messages indicating the audio levels at a regular and configurable pace.
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual              1
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+                         2.3. AT interpreter
+      For some of the products, one can use the AT#H command, which provides access to an on-line help
+      menu. Direct use command are listed (dial, on-hook). More elaborated commands (such as codec
+      configuration) are described in each display command (AT&Vn).
+      AT&V commands indicate for any selection :
+            Its numerical value,
+            Its meaning in the current language version.
+      It is therefore possible to find a numerical selection by successive tries of possible options followed by
+      the AT&Vi command.
+      For the specific case of codec bit-rate selection (AT#CHD), the AT&V4 command allows displaying of
+      possible combinations of bit rate / number of B-channels for the selected codec (previously selected via
+      AT#COD command).
+
+      Device specific commands have a AT#XXX format, with a three letters label.
+
+      It is possible to recall the last command for replay via the A+ non standard command.
+
+      Whenever a command for a configuration change is valid, the new value is immediately stored in non-
+      volatile memory within the current configuration. Such a command may induce other changes in
+      configuration in order to maintain the consistency of the configuration (e.g. programming the algorithm to
+      G711 induces a change to 64 kbit/s, whatever the previous bit rate was).
+      As in the Hayes AT command format, commands may be concatenated. Commands that may cause a
+      reset of the equipment or a change in the RS232 format must not be concatenated. The same holds for
+      commands related to a change in dialling number.
+      The OK acknowledgement of a command is transmitted only when the device is ready to accept the next
+      command.
+      Conversely, the next command cannot be sent before the OK acknowledgement for a command has been
+      received.
+
+                         2.4. Opening/closing a control session
+      Access to the device may be protected by a password. In such case, the user (or control system) must
+      enter the password with the appropriate command (AT#PWD=password_value) in order to open a
+      control session. Conversely, the session can be closed by entering the AT#EXI command.
+      If the password is left «blank», access to the device is granted at any time.
+
+                         2.5. Debug information
+      In the debug operating mode some information may be sent by the device on the AT link. Such
+      information is sent as BASIC language commentaries, i.e. it is preceded by « ‘ » sign (Quote 27 hexa).
+      Any management system should ignore all information between such a « ‘ » sign and the end of the line.
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual              2
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      3. Summary list of AT commands
+
+                                                                                                                                       Details
+                        Category                                     Syntax                                  Function
+                                                                                                                                       on page
+                                                  ATEn                                    Local echo control                                 7
+
+                        General                   ATI[n]                                  Equipment identification                           7
+                       commands                   ATZ                                     Reset the device                                   8
+                                                  AT#H[n]                                 On line help                                       8
+                                                  AT#PWD=password                         Opening of a control session                       9
+                     Session and
+                      password                    AT#EXI                                  Closure of a control session                       9
+                     management
+                                                  AT#NPW=password                         New password programming                           9
+                                                  AT#NET=n                                Selection of active transmission interface        10
+                                                  AT#DIA=n                                Dial method                                       10
+                                                  AT#TON=n                                Dial tone                                         10
+                                                  AT#NUMn=nnnn*sss                        Dial number and sub-address programming           11
+                                                  AT&Zn=nnnn*sss
+                                                  AT#LOCn=nnnn*sss                        Local number and sub-address setting              12
+                                                  ATDS[n]                                 Call initiation                                   12
+
+                                                  ATH[n]                                  Link termination                                  12
+                                                  AT#AUTOi=n                              Automatic answering mode                          13
+                           Call                   ATAn                                    Accept an incoming call                           13
+                          control
+                                                  AT#TAE=n                                Incoming calls filtering                          13
+                                                  AT#TFS=n                                Proprietary call filtering                        14
+                                                  AT#HLC=n                                HLC enabling                                      14
+                                                  AT#REDi=n                               Auto redial mode                                  15
+                                                  AT#NBR=n                                Redial, number of retries                         15
+                                                  AT#TTR=n                                Redial, time to redial                            15
+                                                  AT#LCT=n                                Loop control mode                                 16
+                                                  AT#LLBC=n                               Backup call for LL backup                         16
+                                                  AT#LLBR=n                               Backup receive mode for LL backup                 16
+                                                  AT#DHCP=n                               Addressing mode DHCP/static                       17
+                                                  AT#IP=n.p.q.r                           IP address of equipment (static mode)             17
+                                                  AT#IPM=n.p.q.r                          Sub-network mask (static IP mode)                 17
+                            IP                    AT#GW=n.p.q.r                           Default gateway (static IP mode)                  18
+                         network
+                         settings                 AT#DNS=n.p.q.r                          DNS address (static IP mode)                      18
+                                                  AT#IPQ=n                                IP network quality                                18
+                                                  AT#VISU=ip:port period                  Configure periodic audio level information        19
+                                                  AT#REP=n                                Packet replication configuration                  19
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                                      3
+This document is the property of AETA and can not be duplicated without authorisation   March 2018                                     55 000 047-P AARC protocol.docx
+      Summary list of AT commands (continued)
+
+                           Category                                   Syntax                              Function             cf. page
+                                                    AT#SEL=n                             Single/Dual codec mode (LL or ISDN)      20
+                                                    AT#SELIP=n                           Single/Dual codec mode (IP)              20
+                                                    AT#CODi=n                            Coding algorithm selection               20
+                                                    AT#FRE=n                             Coding sampling rate selection           22
+                                    AT#CHDi=n                                            Coding bit rate selection                23
+                         Coding
+                                    AT#ORI=n                                             Original/Copy configuration (MPEG)       23
+                      configuration
+                                    AT#COP=n                                             Copyright configuration (MPEG)           24
+                                                    AT#COR=n                             Error correction mode (MPEG, POTS)       24
+                                                    AT#CLK=n                             Clock mode                               25
+                                                    AT#LEV=n                             Line level                               25
+                                                    AT#SPD=n                             Speed                                    25
+                                                    AT#TYP=n                             Audio interface format selection         30
+                                                    AT#SYNC                              AES interface synchronization mode       30
+                                                    AT#AES                               AES interface sampling frequency         30
+                                                    AT#GIN=n                             Maximum input level configuration        31
+                                                    AT#GOUT=n                            Maximum output level configuration       31
+                                                    AT#ZIN                               Input impedance selection                31
+                                                    AT#IMP=n                             Output load impedance selection          32
+                                                    AT#CHSi=n                            Channel switch                           32
+
+                         Audio      AT#USBA=n                                            USB audio input switch                   32
+                      configuration AT#GISi=n                                            Mic/Line input gain select               32
+                                                    AT#LIMi=n                            Channel limiter activation               33
+                                                    AT#PWRi=n                            Mic/Line input powering                  33
+                                                    AT#HPFi=n                            Mic/Line input HP filter                 34
+                                                    AT#CHRi=n                            Mic/Line input routing                   34
+                                                    AT#CPM=n                             Channel panning mode                     34
+                                                    AT#PADi=n                            Mic/Line input attenuation pad           34
+                                                    AT#OSEL=n                            Output signal selection                  35
+                                                    AT#CCRi=n                            Coordination channel routing             35
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                              4
+This document is the property of AETA and can not be duplicated without authorisation   March 2018                             55 000 047-P AARC protocol.docx
+      Summary list of AT commands (continued)
+
+                                                                                                                                      Details
+                           Category                                     Syntax                                Function
+                                                                                                                                      on page
+                                                    AT#CDA=n                                  Data channel activation                    26
+                                                    AT#BAU=n                                  Data channel baud rate                     26
+                                                    AT#PAR=n                                  Data channel parity                        27
+                                                    AT#DAT=n                                  Data channel bit number                    27
+
+                          Auxiliary                 AT#STO=n                                  Data channel stop bits                     27
+                          functions                 AT#REL=n                                  Relay transmission activation              28
+                                                    AT#GPIi=n                                 Force GPI #i (relay “send”)                28
+                                                    AT#GPOi=n                                 Force GPO #i (relay output/”receive”)      28
+                                                    AT#VOR=n                                  Auxiliary audio channel                    29
+                                                    AT#SMS=”text_string”                      Display a short message on the screen      29
+                                                    AT#5AS=n                                  Activation of 5A System                    36
+                                                    AT#BAU_X=n                                Control port baud rate                     36
+                                                    AT#PAR_X=n                                Control port parity                        36
+                                                    AT#DAT_X=n                                Control port bit number                    37
+                                   AT#STO_X=n                                                 Control port stop bits                     37
+                       System and
+                                   AT#MALn=m                                                  Alarm mask programming                     38
+                     test commands
+                                   AT#BOU=n                                                   Test loops                                 39
+                                                    AT#RINGING_i=m                            Configure “Ringing” events                 39
+                                                    AT#CALLING_i=m                            Configure “Calling” events                 39
+                                                    AT#ESTABLISHED_i=m                        Configure “Established” events             40
+                                                    AT#RELEASED_i=m                           Configure “Released” events                40
+                                    AT#LAN=n                                                  Display language selection                 41
+                        Country
+                      configuration AT#ISDN=n                                                 ISDN protocol selection                    41
+                       commands
+                                    AT#POTC=n                                                 Country selection for POTS mode            42
+                                                    AT#MER=n                                  Recall a configuration memory              43
+
+                        Memory                      AT#MEE=n                                  Store a configuration memory               43
+                       management                   AT#MENn=NAME                              Name a configuration memory                43
+                                                    AT#NAC=n                                  Memory operation mode                      44
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                                     5
+This document is the property of AETA and can not be duplicated without authorisation   March 2018                                    55 000 047-P AARC protocol.docx
+      Summary list of AT commands (continued)
+
+                                                                                                                                      Details
+                          Category                                   Syntax                                 Function
+                                                                                                                                      on page
+                                                   AT&V[0]                               Dial numbers, local numbers and answering       45
+                                                                                         modes display
+                                                   AT&V1                                 Codec and audio interface configuration         46
+                                                                                         display
+                                                   AT&V2                                 Auxiliary functions configuration display       48
+                                                   AT&V3                                 Codec alarms display                            48
+                                                   AT&V4                                 Available bit rates                             49
+                                                   AT&V5                                 Country configuration display                   49
+                     Configuration AT&V6                                                 Alarm masks display                             50
+                      and status
+                                   AT&V7                                                 Negotiated codec configuration display          51
+                        display
+                                   AT&V8                                                 Control port configuration display              51
+                                                   AT&V9                                 Display incoming calls filtering                52
+                                                                                         configuration and IP network configuration
+                                                   AT&V10                                Display options installed in the unit           52
+                                                   AT&V11                                Display event masking configuration             53
+                                                   AT&V20                                Get audio levels                                53
+                                                   AT&V21                                Mobile network status display                   54
+                                                   AT#SUP[n]                             Global supervisory command                      54
+                                                   $RINGING_i                            “Ringing” event                                 59
+                        Unsolicited                $CALLING_i                            “Calling” event                                 59
+                          event
+                         messages                  $ESTABLISHED_i                        “Established” event                             59
+                                                   $RELEASED_i                           “Released” event                                59
+                       Audio levels                $BAR=n,p,q,r                          Publish audio levels                            59
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                                     6
+This document is the property of AETA and can not be duplicated without authorisation   March 2018                                    55 000 047-P AARC protocol.docx
+      4. Details of AT commands syntax
+
+                         4.1. General commands
+
+      ATE
+            Description :
+                Local echo control
+                This command is not “password-sensitive”, i.e. it is available even without opening a control
+                session
+            Applicable to : all units
+            Format :
+                ATE[n]
+                                     n=1 (default): local echo active
+                                     n=0 :          no local echo
+                                     ATE0 switches off the local echo
+
+
+      ATI
+            Description :
+                Equipment identification
+                This command is not “password-sensitive”, i.e. it is available even without opening a control
+                session
+            Applicable to : all units
+            Format :
+                ATI[n]
+                 n=0 (default): Product identification
+                 n=1 :          ISDN interface board version number (HS3 / S3)
+                 n=2 :          Codec board software version numbers; Global software version (S4/S+)
+            Examples :
+                                     ATI
+                                     SCOOP4+
+                                     OK
+
+                                     ATI1
+                                     S0 -- V 5.06 -
+                                     OK
+
+                                     ATI2
+                                     V8.01 3.12
+                                     OK
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual              7
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      ATZ
+            Description :
+                Resets the device.
+            Applicable to : all units
+            Format :
+                ATZ
+            Response :
+                OK is transmitted as an acknowledgement, before the unit reboots. Note: because of the reboot,
+                the control session is closed after this command!
+
+
+      AT#H
+            Description :
+                On line help
+                This command is not “password-sensitive”, i.e. it is available even without opening a control
+                session
+            Applicable to : HS3 / S3
+            Format :
+                AT#H, AT#H0, AT#H1
+                      First help screen
+                AT#H2, AT#H3, AT#H4
+                      Other help screens
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual              8
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+                         4.2. Session and password management
+
+      AT#PWD
+            Description :
+                Opening of a control session
+            Applicable to : all units
+            Format :
+                AT#PWD=password
+                     The password includes a maximum of 8 numerical characters
+                     The factory setting is «blank» (no password)
+
+
+      AT#EXI
+            Description :
+                Closure of a control session (previously opened by entering the password with AT#PWD).
+            Applicable to : all units
+            Format :
+                AT#EXI
+
+
+      AT#NPW
+            Description :
+                New password programming
+            Applicable to : all units
+            Format :
+                AT#NPW=new_password
+                     The password must include a maximum of 8 numerical characters
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual              9
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+                         4.3. Call control
+      This category of commands enables the management of communications (dial & receive calls).
+
+
+      AT#NET
+            Description :
+                Allows the selection of the active transmission interface
+            Applicable to : all units
+            Format :
+                AT#NET=n
+                     n=0 : ISDN interface
+                     n=1 : Leased line interface                                                     (not allowed for S3, S+, Scoopy+ S)
+                     n=2 : Analog line : Codec mode                                                  (not allowed for S3, HS3)
+                     n=3 : Analog line : Hybrid mode                                                 (S+, Scoopy+ S)
+                     n=4 : Mobile voice interface                                                    (not allowed for S3, HS3)
+                     n=5 : IP interface                                                              (not allowed for S3, HS3)
+                     n=6 : Mobile IP                                                                 (2G/3G/3G+/4G) (S+, S4, S5, SxS)
+
+            Example :
+                                     AT#NET=0
+                                     OK
+            Command to display the current configuration:
+                      AT&V, AT&V0
+
+
+      AT#DIA
+            Description :
+                Configuration of the dial method
+            Applicable to : S+, S4, S5, SxS
+            Format :
+                AT#DIA=n
+                     n=0 :                           Tone
+                     n=1 :                           Pulse
+
+
+      AT#TON
+            Description :
+                         Selection of the dial tone
+            Applicable to : S+, S4, S5, SxS
+            Format :
+                AT#TON=n
+                     n=0 :                           Detect,
+                     n=1 :                           Do not wait for dial tone
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                                         10
+This document is the property of AETA and can not be duplicated without authorisation   March 2018                                         55 000 047-P AARC protocol.docx
+      AT&Z
+      AT#NUM
+            Description :
+                Remote party identifier for an outgoing call: dial number and sub-address programming (ISDN
+                mode), dial number (POTS mode, GSM mode), IP address or SIP URI (IP mode).
+                Warnings:
+                 Separate numbers are allocated for single or dual codec modes (ISDN). Moreover, numbers
+                     may or may not be linked to configuration memories (see AT#NAC command).
+                 Each B channel is allocated a dial number in ISDN mode
+            Applicable to : all units
+            Format (ISDN mode):
+                AT&Zn=nnn[*sss], or AT#NUMn=nnn[*sss]
+                where
+                       n     is the index of the number to be entered
+                             1, 2, 3, 4, 5, or 6 for single codec mode
+                             7 for the «1st codec» in dual codec mode
+                             8 for the «2nd codec» in dual codec mode
+                             (or mobile voice coordination channel on S+)
+
+                                     nnn             : ISDN number (40 digits maximum)
+                                     *               : Number / sub-address separator
+                                     sss             : Sub-address (optional, 4 digits maximum)
+            Format (POTS or mobile voice):
+                AT&Z1=nnn, or AT#NUM1=nnn
+                where
+                       nnn    : dial number (40 digits maximum)
+            Format (IP mode, direct IP address):
+                AT&Z1=n.p.q.r, or AT#NUM1= n.p.q.r
+                where
+                        n.p.q.r is an IP address in decimal format
+                                example: 192.168.120.23
+            Format (IP mode, SIP URI format):
+                AT&Z1=user@server, or AT#NUM1= user@server
+                where
+                        user    : is a valid identifier on a SIP server
+                        server : is the IP address or the domain name of a SIP server
+                        (40 digits maximum for user@server)
+            Command to display the current configuration:
+                      AT&V, AT&V0
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             11
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT#LOC
+            Description :
+                Local number and sub-address programming.
+            Applicable to : all units (ISDN mode)
+            Format :
+                AT#LOCn=nnn[*sss]
+                where
+                      n    is the index of the number to be entered
+                           1, 2, 3, 4, 5, or 6 for single codec mode
+                           7 for the «1st codec» in dual codec mode
+                           8 for the «2nd codec» in dual codec mode
+                           (not relevant for mobile voice coordination channel on S+)
+
+                                     nnn             : Local ISDN number (40 digits maximum)
+                                     *               : Number / sub-address separator
+                                     sss             : Local sub-address (optional, 4 digits maximum)
+            Command to display the current configuration:
+                      AT&V, AT&V0
+
+
+      ATDS
+            Description :
+                Call initiating (ISDN mode, IP mode). The command triggers a call to the destination specified
+                by AT&Zn or AT#NUMn (see above).
+            Applicable to : all units.
+            Format :
+                ATDS[n]
+                     n                               corresponds to the index of the concerned codec (1 or 2, default 1)
+                                                     2 is codec 2 in dual codec mode (HS3 / S3 / S4 / S5 / Scoop5 S)
+                                                     2 is mobile voice coordination channel for S+ / Scoopy+ S.
+            Examples:
+               ATDS2 initiate a call from codec 2 (in dual ISDN codec mode)
+               ATDS           initiate a call (on codec 1 if in dual codec mode)
+
+
+      ATH
+            Description :
+                Link termination (any mode except LL)
+            Applicable to : all units
+            Format :
+                ATH[n]
+                      n                              : is the index of the communication link to terminate (default 1)
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                         12
+This document is the property of AETA and can not be duplicated without authorisation   March 2018                         55 000 047-P AARC protocol.docx
+      AT#AUTO
+            Description :
+                Allows the selection of the automatic answering mode
+            Applicable to : HS3 / S3
+            Format :
+                AT#AUTOi=n
+                     i = 0 : codecs 1 & 2
+                     i=1 : codec 1
+                     i=2 : codec 2
+
+                                     n=0 : Manual answering
+                                     n=1 : Automatic answering
+            Example :
+                                     AT#AUTO1=1
+                                     OK
+            Command to display the current configuration:
+                      AT&V, AT&V0
+
+
+      ATA
+            Description :
+                Accept an incoming call
+            Applicable to : HS3 / S3
+            Format :
+                ATAn
+                                     n is the index of the link to accept (1 or 2)
+
+
+      AT#TAE
+            Description :
+                This command allows the user to filter ISDN calls depending on their nature.
+            Applicable to : all units
+            Format :
+                AT#TAE=n
+                     n= 0 Any incoming call is accepted
+                     n= 1 Only "telephone" type calls are accepted.
+                     n= 2 Only "data" type calls are accepted (recommended mode when it is not intended
+                     to receive calls from normal telephones).
+            Example:
+                                     AT#TAE=2
+                                     OK
+            Command to display the current configuration:
+                      AT&V9
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             13
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT#TFS
+            Description :
+                Enables a «proprietary» filtering mode on incoming ISDN calls, based on sub-address values. In
+                this mode, the local sub-address behaves like a password for incoming calls.
+            Applicable to : HS3 / S3
+            Format :
+                AT#TFS=n
+                     n= 0                            Standard mode
+                     n= 1                            Proprietary filtering mode
+            Example:
+                                     AT#TFS=1
+                                     OK
+            Command to display the current configuration:
+                      AT&V9
+
+
+      AT#HLC
+            Description :
+                Enables coding of HLC (High Layer Capability) information element in outgoing ISDN calls.
+                This parameter should usually stay equal to zero. However, some international calls may require
+                the encoding of this parameter.
+            Applicable to : HS3 / S3
+            Format :
+                AT#HLC=n
+                     n= 0                            No (default)
+                     n= 1                            Yes
+            Example:
+                                     AT#HLC=1
+                                     OK
+            Command to display the current configuration:
+                      AT&V9
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             14
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT#RED
+            Description :
+                Activation of auto redialling feature (recall destination in case of loss of link)
+            Applicable to : S4 / S5 / S+ / SxS
+            Format :
+                AT#REDi=n
+                     i=1 :                           codec 1
+                     i=2 :                           codec 2
+
+                                     n=0 : Normal mode (default)
+                                     n=1 : Redial active
+            Example :
+                                     AT#RED1=1
+                                     OK
+            Command to display the current configuration:
+                      AT&V0
+
+
+      AT#NBR
+            Description :
+                Number of retries for redialling feature.
+            Applicable to : S4 / S5 / S+ / SxS
+            Format :
+                AT#NBR=n
+                     n=0 : no limit, infinite retry
+                     n=1..20 : number of (unsuccessful) trials before giving up (default 1)
+            Example :
+                                     AT#NBR=6
+                                     OK
+            Command to display the current configuration:
+                      AT&V9
+
+
+      AT#TTR
+            Description :
+                Time to wait before redial redialling.
+            Applicable to : S4 / S5 / S+ / SxS
+            Format :
+                AT#TTR=n
+                     n=1..30 : Time in seconds before new redialing attempt (default 1 second)
+            Example :
+                                     AT#TTR=10
+                                     OK
+            Command to display the current configuration:
+                      AT&V9
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             15
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT#LCT
+            Description :
+                Use of loop control feature
+            Applicable to : S4 / S5 / Scoop5 S / Scoop5 S-IP
+            Format :
+                AT#LCT=n
+                     n=0 : Disabled (default, no loop control)
+                     n=1 : Active (outgoing links controlled by loop)
+                     n=2 : Active, loop switches to backup mode
+            Example :
+                                     AT#LCT=1
+                                     OK
+            Command to display the current configuration:
+                      AT&V0
+
+
+      AT#LLBC
+            Description :
+                Selection of network for backup call (in relation with loop controlled backup)
+            Applicable to : S4 / S5 / SxS
+            Format :
+                AT#LLBC=n
+                     n=0 : ISDN backup call triggered via loop control
+                     n=5 : IP backup call triggered via loop control
+            Example :
+                                     AT#LLBC=5
+                                     OK
+            Command to display the current configuration:
+                      AT&V0
+
+
+      AT#LLBR
+            Description :
+                Activate “passive” backup mode (switch to backup on receiving an ISDN or IP call)
+            Applicable to : S4 / S5 / SxS
+            Format :
+                AT#LLBR=n
+                     n=0 : Inactive (default, IP or ISDN incoming call ignored when in LL mode)
+                     n=1 : Active (accept and switch to backup on receiving an IP or ISDN call)
+            Example :
+                                     AT#LLBR=0
+                                     OK
+            Command to display the current configuration:
+                      AT&V0
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             16
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+                         4.4. IP network settings
+      The commands in this category allow the configuration of the IP network interface.
+
+
+      AT#DHCP
+            Description :
+                IP addressing mode
+            Applicable to : S4 / S5 / S+ / SxS
+            Format :
+                AT#DHCP=n
+                     n=0 : use DHCP (default)
+                     n=1 : static mode
+            Example :
+                                     AT#DHCP=0
+                                     OK
+            Command to display the current configuration:
+                      AT&V9
+
+
+      AT#IP
+            Description :
+                Static IP address setting (valid when DHCP is not used)
+            Applicable to : S4 / S5 / S+ / SxS
+            Format :
+                AT#IP=n.p.q.r
+                      n.p.q.r is the static IP address
+            Example :
+                                     AT#IP=10.0.58.125
+                                     OK
+            Command to display the current configuration:
+                      AT&V9
+
+
+      AT#IPM
+            Description :
+                Sub-network mask (valid when DHCP is not used)
+            Applicable to : S4 / S5 / S+ / SxS
+            Format :
+                AT#IPM=n.p.q.r
+                     n.p.q.r is the mask
+            Example :
+                                     AT#IPM=255.255.255.0
+                                     OK
+            Command to display the current configuration:
+                      AT&V9
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             17
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT#GW
+            Description :
+                Default gateway address (valid when DHCP is not used)
+            Applicable to : S4 / S5 / S+ / SxS
+            Format :
+                AT#GW=n.p.q.r
+                     n.p.q.r is the gateway IP address
+            Example :
+                                     AT#GW=10.0.58.254
+                                     OK
+            Command to display the current configuration:
+                      AT&V9
+
+
+      AT#DNS
+            Description :
+                DNS address (valid when DHCP is not used)
+            Applicable to : S4 / S5 / S+ / SxS
+            Format :
+                AT#DNS=n.p.q.r
+                     n.p.q.r is the DNS IP address
+            Example :
+                                     AT#DNS=10.15.58.2
+                                     OK
+            Command to display the current configuration:
+                      AT&V9
+
+
+      AT#IPQ
+            Description :
+                IP network quality setting
+            Applicable to : S4 / S5 / S+ / SxS
+            Format :
+                AT#IPQ=n
+                     n=0 : low quality
+                     n=1 : middle quality (default)
+                     n=2 : high quality
+                     n=3 : bad quality
+                     n=4 : very bad quality
+                     n=5 : very high quality
+
+            Example :
+                                     AT#IPQ=1
+                                     OK
+            Command to display the current configuration:
+                      AT&V9
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             18
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT#VISU
+            Description :
+                Configure the periodic sending of measured audio levels to a codec management server. The
+                messages are sent unsolicited at regular time intervals.
+            Important notice:: The message is sent using UDP
+            Applicable to : S4 / S5 / S+ / SxS
+            Format :
+                AT#VISU=n.p.q.r:port period
+                     n.p.q.r is the IP address of the codec management server
+                     port     is the UDP port number on the management server
+                     period time interval in ms; multiple of 50, minimum 150.
+            Example :
+                                     AT#VISU=10.0.20.55:8010 500                                     send every 500 ms to port 8010 of IP 10.0.20.55
+                                     OK
+            Command to display the current configuration:
+                      None
+
+
+
+      AT#REP
+            Description :
+                Activation and configuration of the packet replication feature (IP modes)
+            Applicable to : S+ / S5 / SxS
+            Format :
+                AT#REP=n
+                     n=0 :                           Normal mode, no packet replication
+                     n=1 :                           Every packet is sent twice
+                     n=2:                            Every packet sent twice, with interleaving
+            Command to display the current configuration:
+                      AT&V1
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                                     19
+This document is the property of AETA and can not be duplicated without authorisation   March 2018                                     55 000 047-P AARC protocol.docx
+                         4.5. Coding configuration
+      The commands in this category allow the configuration of the coding part in the device.
+
+
+      AT#SEL
+            Description :
+                Selection of the single or dual codec mode (LL or ISDN mode).
+                Warning, this command may induce a modification of the following parameter (coding type)
+                when changing from single to dual mode, as only G711 and G722 algorithms are available in dual
+                codec mode.
+            Applicable to : HS3 / S3 / S4 / S5 / Scoop5 S
+            Format :
+                AT#SEL=n
+                     n=0 :                           single codec mode
+                     n=1 :                           dual codec mode
+            Command to display the current configuration:
+                      AT&V1
+
+
+      AT#SELIP
+            Description :
+                Selection of the single or dual codec mode (IP mode).
+                Warning, this command may induce a modification of the following parameter (coding type)
+                when changing from single to dual mode.
+            Applicable to : Scoop5 S
+            Format :
+                AT#SELIP=n
+                     n=0 : single codec mode
+                     n=1 : dual codec mode
+            Command to display the current configuration:
+                      AT&V1
+
+
+      AT#COD
+            Description :
+                Selection of the coding algorithm. Available options in this command depend on the « selection »
+                command (AT#SEL).
+                Warning ! This command may induce a change in the following parameter (codec bit rate) in case
+                its value is not consistent with the new algorithm selected.
+            Applicable to : all units
+            Format :
+                AT#CODi=n
+                     i = 1 : codec 1
+                     i = 2 : codec 2                                                                 (not allowed for S+ / Scoopy+ S)
+
+                                     n=0 :           G722 - H242 (mono)
+                                     n=1 :           G711 (mono)
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                             20
+This document is the property of AETA and can not be duplicated without authorisation   March 2018                             55 000 047-P AARC protocol.docx
+                                     n=2 :           MPEG Layer 2 (J52 for ISDN mode) - Mono
+                                     n=3 :           MPEG Layer 2 (J52 for ISDN mode) – Dual mono
+                                     n=4 :           MPEG Layer 2 (J52 for ISDN mode) - Stereo
+                                     n=5 :           MPEG Layer 2 (J52 for ISDN mode) – Joint stereo
+
+                                     n=7 : G722 – SRT (or G722 for IP mode)
+                                     n=8 : G722 – H221
+                                     n=9 : 4SB ADPCM - Mono
+                                     n=10 : 4SB ADPCM – Stereo
+
+                                     n=12 : TDAC
+
+                                     n=15 : MPEG Layer 3 (J52 for ISDN mode) – Mono
+                                     n=16 : MPEG Layer 3 (J52 for ISDN mode) - Dual mono
+                                     n=17 : MPEG Layer 3 (J52 for ISDN mode) - Stereo
+                                     n=18 : MPEG Layer 3 (J52 for ISDN mode) – Joint stereo
+                                     n=19 : MPEG Layer 2 (Proprietary) – Mono (not used for IP mode)
+                                     n=20 : MPEG Layer 2 (Proprietary) – Dual mono (not used for IP mode)
+                                     n=21 : MPEG Layer 2 (Proprietary) - Stereo (not used for IP mode)
+                                     n=22 : MPEG Layer 2 (Proprietary) – Joint stereo (not used for IP mode)
+                                     n=23: G722 encoding / TDAC decoding
+                                     n=24: TDAC encoding / G722 decoding
+                                     n=25 : MPEG Layer 3 (Proprietary) - Mono (not used for IP mode)
+                                     n=26 : MPEG Layer 3 (Proprietary) – Dual mono (not used for IP mode)
+                                     n=27 : MPEG Layer 3 (Proprietary) - Stereo (not used for IP mode)
+                                     n=28 : MPEG Layer 3 (Proprietary) – Joint stereo (not used for IP mode)
+
+                                     n=30 : CELP                                                     (not allowed for S3, HS3)
+                                     n=31 : Hybrid mode (analog line)                                (S+ / Scoopy+ S)
+
+                                     n=32 : MPEG AAC-LC – Mono
+                                     n=33 : MPEG AAC-LC - Dual mono (reserved but actually not used)
+                                     n=34 : MPEG AAC-LC - Stereo
+                                     n=35 : MPEG AAC-LC – Joint stereo (reserved but actually not used)
+                                     n=36 : MPEG HE-AAC - Mono
+                                     n=38 : MPEG HE-AAC - Stereo
+                                     n=42 : MPEG HE-AAC v2 (Stereo by design)
+
+                                     n=50 : OPUS – Mono (SxS)
+                                     n=51 : OPUS – Stereo (SxS)
+
+                                     n=62            MPEG AAC-LC-LOAS - Mono
+                                     n=63            MPEG AAC-LC-LOAS - Dual mono (reserved but actually not used)
+                                     n=64            MPEG AAC-LC-LOAS - Stereo
+                                     n=65            MPEG AAC-LC-LOAS - Joint stereo (reserved but actually not used)
+                                     n=66            MPEG HE-AAC-LOAS - Mono
+                                     n=68            MPEG HE-AAC-LOAS - Stereo
+                                     n=72            MPEG HE-AAC v2-LOAS (Stereo by design)
+
+                                     n=100 : L16 – Mono (SxS)
+                                     n=101 : L16 – Stereo (SxS)
+                                     n=102 : L20 – Mono (SxS)
+                                     n=103 : L20 – Stereo (SxS)
+                                     n=104 : L24 – Mono (SxS)
+                                     n=105 : L24 – Stereo (SxS)
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                               21
+This document is the property of AETA and can not be duplicated without authorisation   March 2018                               55 000 047-P AARC protocol.docx
+            Remarks
+               The proprietary MPEG Layer 2 mode is compatible with CCS codecs.
+               The MPEG Layer 3 modes are obsolete (only older products).
+               Modes including the TDAC algorithm are only available optionally on the device.
+            Command to display the current configuration:
+                      AT&V1
+
+
+      AT#FRE
+            Description :
+                Selection of the coding sampling rate. Only needed for MPEG algorithms and linear coding
+                (L16/L20/L24), as the sampling rate is fixed for other algorithms.
+            Applicable to : all units
+            Format :
+                AT#FRE=n
+                     n=0 :                           48 kHz
+                     n=1 :                           32 kHz
+                     n=2 :                           24 kHz (not valid for MPEG-AAC and linear coding)
+                     n=3 :                           16 kHz (not valid for MPEG-AAC and linear coding)
+            Remarks :
+               As the configuration must remain consistent after any AT command, AT#FRE command should
+               not be sent when the algorithm is not MPEG. Moreover, in such case, the value returned by
+               configuration display commands (see AT&V1) is meaningless.
+            Command to display the current configuration:
+                      AT&V1
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             22
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT#CHD
+            Description :
+                Selection of the codec bit rate and hence desired number of B channels.
+            Applicable to : all units
+            Format :
+                AT#CHDi=d
+                     i = 1 : codec 1
+                     i = 2 : codec 2                                                       (not allowed for S+ and Scoopy+ S)
+                     d:      bit rate in kbit/s
+            Remarks :
+
+                     1. This command is needed if and only if the algorithm is: MPEG (any variation), OPUS, CELP
+                     in case of AT#NET=2 (Analog Line: Codec mode). Other cases have a fixed (implicit) bit rate for
+                     each algorithm/channel mode combination (AT#COD parameter value). However, in such case,
+                     the possible command is accepted and returns OK if the parameter is valid (only one valid value).
+                     2. In case of AT#NET=2 (Analog Line: Codec mode), the bit rate is truncated (in comparison
+                     with the real bit rate):
+                             d = 12 :         12 kbits/s
+                                = 14 :        14.4 kbits/s
+                                = 16 :        16.8 kbits/s
+                                = 19:         19.2 kbits/s
+                                = 21 :        21.6 kbits/s
+                                = 24 :        24 kbits/s
+                     3. For MPEG-AAC in case of AT#NET=2 (IP mode), the bit rate is also truncated for non
+                     integer values. Possible values:
+                     d = 16, 20, 24, 32, 40, 48, 56, 64, 96, 128, 192, 256
+                     4. For OPUS, the bit rate is the “start value” used at the beginning of the link; it can change
+                     during the transmission (if negotiated by the units).
+            Command to display the current configuration:
+                      AT&V1
+            Example
+                                     AT#CHD1=128                                    Codec configured at 128 kbit/s
+
+
+      AT#ORI
+            Description :
+                Configuration of the Original/Copy field (MPEG only)
+            Applicable to : HS3 / S3
+            Format :
+                AT#ORI=n
+                     n=0 :                           Original
+                     n=1 :                           Copy
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                              23
+This document is the property of AETA and can not be duplicated without authorisation       March 2018                          55 000 047-P AARC protocol.docx
+      AT#COP
+            Description :
+                Configuration of the Copyright field (MPEG only)
+            Applicable to : HS3 / S3
+            Format :
+                AT#COP=n
+                     n=0 :                           Active
+                     n=1 :                           Inactive
+
+
+      AT#COR
+            Description :
+                Selection of the error correction mode (MPEG only), or
+                Selection of the protected mode (Analog line : CELP Codec Mode)
+            Applicable to : all units
+            Format :
+                AT#COR=n
+                     n=0 :                           mode 0,
+                     n=1 :                           mode 1,
+                     n=2 :                           mode 2,
+                     n=3 :                           mode 3.(not allowed in Analog line / CELP Codec Mode)
+            Command to display the current configuration:
+                      AT&V1
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             24
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT#CLK
+            Description :
+                Configuration of the clock mode (POTS mode)
+            Applicable to : S+ / S5 / SxS
+            Format :
+                AT#CLK=n
+                     n=0 :                           Standard
+                     n=1 :                           Free
+
+
+      AT#LEV
+            Description :
+                Configuration of the line level (POTS mode)
+            Applicable to : S+ / S5 / SxS
+            Format :
+                AT#LEV=n
+                     n=0 :                           0 dBm
+                     n=1 :                           -3 dBm
+                     n=2 :                           -6 dBm
+                     n=3 :                           -9 dBm
+                     n=4 :                           -10 dBm
+                     n=5 :                           -13 dBm
+                     n=6 :                           -16 dBm
+
+
+
+      AT#SPD
+            Description :
+                Configuration of the speed (POTS mode)
+            Applicable to : S+ / S4 / S5 / SxS
+            Format :
+                AT#SPD=n
+                     n=0 :                           Auto
+                     n=1 :                           Fixed
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             25
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+                         4.6. Auxiliary functions
+                   4.6.1. Data channel configuration
+      The commands in this group allow configuring the serial data port and the data channel.
+
+
+      AT#CDA
+            Description :
+                Activation/Inhibition of the data channel
+            Applicable to : all units
+            Format :
+                AT#CDA=n
+                     n=0 :                           Data channel disable,
+                     n=1 :                           Data channel enable.
+            Command to display the current configuration:
+                      AT&V2
+
+
+      AT#BAU
+            Description :
+                Data channel bit rate selection.
+            Applicable to : all units
+            Format :
+                AT#BAU=n
+                     n=0 :                           300 bauds,
+                     n=1 :                           1200 bauds,
+                     n=2 :                           2400 bauds,
+                     n=3 :                           4800 bauds.
+                     n=4 :                           9600 bauds.
+            Command to display the current configuration:
+                      AT&V2
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             26
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT#PAR
+            Description :
+                         Data channel parity selection.
+            Applicable to : HS3 / S3
+            Format :
+                AT#PAR=n
+                     n=0 :                           None,
+            Command to display the current configuration:
+                      AT&V2
+
+
+      AT#DAT
+            Description :
+                         Data channel number of bits selection.
+            Applicable to : HS3 / S3
+            Format :
+                AT#DAT=i
+                     n=1 :                           8 data bits.
+            Command to display the current configuration:
+                      AT&V2
+
+
+      AT#STO
+            Description :
+                Data channel number of stop bits selection.
+            Applicable to : HS3 / S3
+            Format :
+                AT#STO=n
+                     n=0 :                           1 stop bit,
+            Command to display the current configuration:
+                      AT&V2
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             27
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+                                     4.6.2. Relay transmission
+
+
+      AT#REL
+            Description :
+                Activation of the relay transmission function.
+                This auxiliary function is not available with all coding algorithms, and may not be available
+                simultaneously with another auxiliary function. See details in the HIFISCOOP 3 ISDN user
+                manual.
+            Applicable to : all units
+            Format :
+                AT#REL=n
+                     n=0 :                           Relay transmission disabled
+                     n=1 :                           Relay transmission active
+            Command to display the current configuration:
+                      AT&V2
+
+
+      AT#GPI
+            Description :
+                Forces the state of the GPI number i on a Scoopy+ or Scoop 4+. For Scoop 4+: overridden by any
+                change of state of the “physical” GPI.
+            Applicable to : S+ / S4 / S5 / SxS
+            Format :
+                AT#GPIi=n
+                     i = number of GPI (1 or 2 for S+)
+                     n = 0 : GPI open, n = 1: GPI closed
+            Command to display the actual state of the GPI)
+                      AT&V2
+
+
+      AT#GPO
+            Description :
+                Forces GPO number i on a Scoopy+ or Scoop 4+. May be overridden by change requested from
+                another origin (e.g. remote GPI if relay transmission is active).
+            Applicable to : S+ / S4 / S5 / SxS
+            Format :
+                AT#GPOi=n
+                     i = number of GPO (1 or 2 for S+)
+                     n = 0 : GPO open, n = 1: GPO closed
+            Command to display the actual state of the GPO)
+                      AT&V2
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             28
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+                                     4.6.3. Auxiliary audio channel configuration
+
+
+      AT#VOR
+            Description :
+                Enables the auxiliary 3 kHz audio channel.
+                This auxiliary function is not available with all coding algorithms, and may not be available
+                simultaneously with another auxiliary function. See details in the HIFISCOOP 3 ISDN and
+                SCOOP 4+ user manuals.
+            Applicable to : HS3 / S3 / S4 / S5
+            Format :
+                AT#VOR=n
+                     n=0 :                           auxiliary 3 kHz audio channel disabled,
+                     n=1 :                           auxiliary audio channel enabled.
+            Command to display the current configuration:
+                      AT&V2
+
+                                     4.6.4. Miscellaneous auxiliary functions
+
+
+      AT#SMS
+            Description :
+                Display a simple text message on the user interface of the audio codec.
+                The exact way of displaying the message is not specified here => device-dependent.
+            Applicable to : S+ / S4 / S5 / SxS
+            Format :
+                AT#SMS=”text_string”
+                     Text_string is a text string, with ASCII characters (other than quotes!).
+                     Maximum length and list of allowed special characters to be defined.
+            Command to display the current configuration: not relevant
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             29
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+                         4.7. Audio configuration
+
+      AT#TYP
+            Description :
+                Selection of the format of the audio interfaces.
+                For S4, selection of the audio input source
+            Applicable to : HS3 / S3 / S4 / S5 / Scoop5 S / Scoop5 S-IP
+            Format :
+                AT#TYP=n
+                     n=0 :                           Analogue format
+                     n=1 :                           AES/EBU format, «asynchronous» mode (S4 : AES format)
+                     n=2 :                           AES/EBU format, 32 kHz sampling rate (S4: not valid)
+                     n=3 :                           AES/EBU format, 48 kHz sampling rate (S4: not valid)
+            Command to display the current configuration:
+                      AT&V1
+
+
+      AT#SYNC
+            Description :
+                Selection of synchronisation mode for the AES interfaces.
+            Applicable to : S4 / S5 / Scoop5 S / Scoop5 S-IP
+            Format :
+                AT#SYNC=n
+                     n=0 : Genlock mode, synchronisation on AES input
+                     n=1 : Master mode, synchronisation from internal clock or network clock.
+            Command to display the current configuration:
+                      AT&V1
+
+
+      AT#AES
+            Description :
+                Selection of the nominal sampling rate for the AES interfaces.
+            Applicable to : S4 / S5 / Scoop5 S / Scoop5 S-IP
+            Format :
+                AT#AES=n
+                     n=0 :                           32 kHz sampling rate
+                     n=1 :                           48 kHz sampling rate
+                     n=2:                            96 kHz sampling rate
+            Command to display the current configuration:
+                      AT&V1
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             30
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT#GIN
+            Description :
+                Configuration of the maximum analogue audio input level.
+                For Scoopy+ and Scoopy+ S, global gain applied to input mix
+            Applicable to : HS3 / S3 / S4 / S5 / S+ / SxS
+            Format :
+                AT#GIN=n
+                     n is the desired maximum level, expressed in dBu (integer value).
+                     Valid range: 0 to 22
+                     For Scoopy+, gain in dB, valid range -12 to 12
+            Example :
+                                     AT#GIN=16                       max. input level set to +16 dBu
+            Command to display the current configuration:
+                      AT&V1
+
+
+
+      AT#GOUT
+            Description :
+                Configuration of the maximum analogue audio output level.
+            Applicable to : all units
+            Format :
+                AT#GOUT=n
+                     n is the desired maximum level, expressed in dBu (integer value).
+                     Valid range: 0 to 22 (for S+: -11 to 22)
+            Command to display the current configuration:
+                      AT&V1
+
+
+      AT#ZIN
+            Description :
+                Configuration of the input impedance.
+            Applicable to : S4 / S5 / Scoop5 S
+            Format :
+                AT#ZIN=n
+                     n=0 :                           low input impedance (600 Ohm)
+                     n=1 :                           high input impedance
+            Command to display the current configuration:
+                      AT&V1
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             31
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT#IMP
+            Description :
+                Configuration of the normal output load.
+            Applicable to : HS3 / S3
+            Format :
+                AT#IMP=n
+                     n=0 :                           Output load is low impedance (600 Ohm)
+                     n=1 :                           Output load is high impedance
+            Command to display the current configuration:
+                      AT&V1
+
+
+
+      AT#CHS
+            Description :
+                Mic/Line input channel switch.
+            Applicable to : S+ and Sy+ S
+            Format :
+                AT#CHSi=n
+                     i=1,2,3: channel to set
+
+                                     n=0 :           Channel off
+                                     n=1 :           Channel on
+            Command to display the current configuration:
+                      AT&V1
+
+
+      AT#USBA
+            Description :
+                USB audio input switch.
+            Applicable to : S+ and Sy+ S
+            Format :
+                AT#USBA=n
+                     n=0 : Channel off
+                     n=1 : Channel on
+            Command to display the current configuration:
+                      AT&V1
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             32
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT#GIS
+            Description :
+                Mic/Line input gain select.
+            Applicable to : S+ / Sy+ S
+            Format :
+                AT#GISi=n
+                     i=1,2,3: channel to set
+
+                                     n=0 :           Input gain is 0 dB
+                                     n=1 :           Input gain is 16 dB
+                                     n=2 :           Input gain is 32 dB
+                                     n=3 :           Input gain is 48 dB
+            Command to display the current configuration:
+                      AT&V1
+
+
+
+      AT#LIM
+            Description :
+                Mic/Line input limiter select.
+            Applicable to : S+ / Sy+ S
+            Format :
+                AT#LIMi=n
+                     i=1,2,3: channel to set
+
+                                     n=0 :           Limiter off (default)
+                                     n=1 :           Limiter active
+            Command to display the current configuration:
+                      AT&V1
+
+
+
+      AT#PWR
+            Description :
+                Mic/Line input powering.
+            Applicable to : S+ / Sy+ S
+            Format :
+                AT#PWRi=n
+                     i=1,2,3: channel to set
+
+                                     n=0 :           No microphone powering (default)
+                                     n=1 :           Phantom +48V
+                                     n=2 :           Phantom +12V
+                                     n=3 :           T12 power
+            Command to display the current configuration:
+                      AT&V1
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             33
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT#HPF
+            Description :
+                Mic/Line input HP filter setting.
+            Applicable to : S+ / Sy+ S
+            Format :
+                AT#HPFi=n
+                     i=1,2,3: channel to set
+
+                                     n=0 :           Filter off (default)
+                                     n=1 :           HP filter active
+            Command to display the current configuration:
+                      AT&V1
+
+
+
+      AT#CHR
+            Description :
+                Mic/Line input routing.
+            Applicable to : S+ / Sy+ S
+            Format :
+                AT#CHRi=n
+                     i=1,2,3: channel to set
+
+                                     n=0 :           signal routed center (default)
+                                     n=1 :           signal routed left / half left
+                                     n=2 :           signal routed right / half right
+            Command to display the current configuration:
+                      AT&V1
+
+
+
+      AT#CPM
+            Description :
+                Channel panning mode
+            Applicable to : S+ / Sy+ S
+            Format :
+                AT#CPM=n
+                     n=0 :                           Panning full left / full right (default)
+                     n=1 :                           Panning half left / half right
+            Command to display the current configuration:
+                      AT&V1
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             34
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT#PAD
+            Description :
+                Mic/Line input attenuation pad.
+            Applicable to : S+ / Sy+ S
+            Format :
+                AT#PADi=n
+                     i=1,2,3: channel to set (only i=3 valid for S+)
+
+                                     n=0 :           normal, no pad (default))
+                                     n=1 :           pad active
+            Command to display the current configuration:
+                      AT&V1
+
+
+
+      AT#OSEL
+            Description :
+                Output signal selection. Applies both to left and right outputs.
+            Applicable to : S+ / Sy+ S
+            Format :
+                AT#OSEL=n
+                     n=0 : Send signal
+                     n=1 : Receive signal
+                     n=2 : Send/Receive mix
+            Command to display the current configuration:
+                      AT&V1
+
+
+
+      AT#CCR
+            Description :
+                Routing of coordination channel to headphones.
+                (Only relevant when the coordination line is active, otherwise the standard routing is used)
+            Applicable to : S+ / Sy+ S
+            Format :
+                AT#CCRi=n
+                     i=1,2: headphone output to configure
+
+                                     n=0 :           Program signal only (both ears, default)
+                                     n=1 :           Coordination signal only (both ears)
+                                     n=2 :           Program (on left ear) and Coordination (on right)
+            Command to display the current configuration:
+                      AT&V1
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             35
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+                         4.8. System and test commands
+
+      AT#5AS
+            Description :
+                Activation or de-activation of 5A System.
+            Applicable to : all units
+            Format :
+                AT#5AS=n
+                     n=0 :                           5A System is disabled
+                     n=1 :                           5A System is active (default)
+            Command to display the current configuration:
+                      AT&V0
+
+
+      AT#BAU_X
+            Description :
+                Control port bit rate selection.
+            Applicable to : HS3 / S3
+            Format :
+                AT#BAU_X=n
+                     n=0 : 300 bauds,
+                     n=1 : 1200 bauds,
+                     n=2 : 2400 bauds,
+                     n=3 : 4800 bauds.
+                     n=4 : 9600 bauds.
+            Command to display the current configuration:
+                      AT&V8
+
+
+      AT#PAR_X
+            Description :
+                         Control port parity selection.
+            Applicable to : HS3 / S3
+            Format :
+                AT#PAR_X=n
+                     n=0 : None,
+                     n=1 : Even,
+                     n=2 : Odd.
+            Command to display the current configuration:
+                      AT&V8
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             36
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT#DAT_X
+            Description :
+                         Control port number of bits selection.
+            Applicable to : HS3 / S3
+            Format :
+                AT#DAT_X=i
+                     n=0 : 7 data bits,
+                     n=1 : 8 data bits.
+            Command to display the current configuration:
+                      AT&V8
+
+
+
+      AT#STO_X
+            Description :
+                Control port number of stop bits selection.
+            Applicable to : HS3 / S3
+            Format :
+                AT#STO_X=n
+                     n=0 : 1 stop bit,
+                     n=1 : 2 stop bits.
+            Command to display the current configuration:
+                      AT&V8
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             37
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT#MAL
+            Description :
+                Alarm masking command
+            Applicable to : HS3 / S3 / S4 / S5 / SxS
+            Format :
+                AT#MALn=mmm
+                     n=1 : first alarm mask byte
+                     mmm : binary mask (decimal format); each alarm is enabled if bi = 1.
+                              b0 (LSB) : Fuse failure
+                              b1 :
+                              b2 : Left decoder fault
+                              b3 : Right decoder fault
+                              b4 : Input overload
+                              b5 : Data channel fault (DSP)
+                              b6:
+                              b7 (MSB): AES input fault
+
+                                     n=2 : second alarm mask byte
+                                     mmm : binary mask :
+                                             b0 :
+                                             b1 :
+                                             b2 :
+                                             b3 : Sampling rate error
+                                             b4 :
+
+                                     n=3 : Third alarm mask byte
+                                     mmm : binary mask :
+                                            b0 : Encoder 1 fallback
+                                            b1 : Decoder 1 fallback
+                                            b2 : Encoder 2 fallback
+                                            b3 : Decoder 2 fallback
+            Example:
+                                     AT#MAL1=255                                    all alarms in the first group are enabled
+                                     OK
+            Command to display the current configuration:
+                      AT&V6
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                              38
+This document is the property of AETA and can not be duplicated without authorisation       March 2018                          55 000 047-P AARC protocol.docx
+      AT#BOU
+            Description :
+                This command activates a test loop.
+            Applicable to : all units except S+
+            Format :
+                AT#BOU=n
+                     n=0 :                           no loopback,
+                     n=1 :                           AD/DA loopback.
+                     n=2 :                           « type 2 » loopback.
+                     n=3 :                           « type 3 » loopback (or codec loopback).
+                     n=4 :                           audio output to input loopback
+                     n=5 :                           coding test                            (not implemented)
+            Command to display the current configuration:
+                      AT#SUP
+
+
+
+      AT#RINGING
+            Description :
+                Masks or enables the “Ringing” event on a Scoop 4+ or Scoop 5.
+            Applicable to : S4 / S5 / SxS
+            Format :
+                AT#RINGINGi=m
+                     i = 1 : codec 1
+                     i = 2 : codec 2
+
+                                     m = 0: Event is masked
+                                     m = 1: Event is enabled
+            Command to display the actual state of the masking
+                      AT&V11
+
+
+
+      AT#CALLING
+            Description :
+                Masks or enables the “Calling” event on a Scoop 4+ or Scoop 5.
+            Applicable to : S4 / S5 / SxS
+            Format :
+                AT#CALLINGi=m
+                     i = 1 : codec 1
+                     i = 2 : codec 2
+
+                                     m = 0: Event is masked
+                                     m = 1: Event is enabled
+            Command to display the actual state of the masking
+                      AT&V11
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual              39
+This document is the property of AETA and can not be duplicated without authorisation   March 2018              55 000 047-P AARC protocol.docx
+      AT#ESTABLISHED
+            Description :
+                Masks or enables the “Established” event on a Scoop 4+ or Scoop 5.
+            Applicable to : S4 / S5 / SxS
+            Format :
+                AT#ESTABLISHEDi=m
+                     i = 1 : codec 1
+                     i = 2 : codec 2
+
+                                     m = 0: Event is masked
+                                     m = 1: Event is enabled
+            Command to display the actual state of the masking
+                      AT&V11
+
+
+
+      AT#RELEASED
+            Description :
+                Masks or enables the “Released” event on a Scoop 4+ or Scoop 5.
+            Applicable to : S4 / S5 / SxS
+            Format :
+                AT#RELEASEDi=m
+                     i = 1 : codec 1
+                     i = 2 : codec 2
+
+                                     m = 0: Event is masked
+                                     m = 1: Event is enabled
+            Command to display the actual state of the masking
+                      AT&V11
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             40
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+                         4.9. Country configuration commands
+
+      AT#LAN
+            Description :
+                Displayed text language selection
+            Applicable to : HS3 / S3
+            Format :
+                AT#LAN=n
+                     n= 0                            Text displayed in French
+                     n= 1                            Text displayed in English
+            Command to display the current configuration:
+                      AT&V5
+
+
+      AT#ISDN
+            Description :
+                Selection of the ISDN protocol.
+            Applicable to : all units
+            Format :
+                AT#ISDN=n
+                      n = 0 : France (VN6)                                                  (HS3, S3, S4)
+                      n = 1 : ETSI (Euro ISDN)                                              (all)
+                      n = 2 : France (VN3)                                                  (HS3, S3, S4)
+                      n = 3 : Japan (NTT)                                                   (all)
+                      n = 4 : Australia                                                     (HS3, S3, S4)
+                      n = 5 : Belgium                                                       (HS3, S3, S4)
+                      n = 6 : France (VN2)                                                  (HS3, S3, S4)
+                      n = 7 : Germany (1TR6)                                                (HS3, S3, S4)
+                      n = 8 : Japan (KDD)                                                   (obsolete)
+                      n = 9 : Nortel (DMS100)                                               (S4)
+                      n = 10 : NI-2                                                         (S4, S+)
+                      n = 11 : AT-T (5E10)                                                  (S4)
+
+                                     Country-specific versions may have other mapping than above
+            Command to display the current configuration:
+                      AT&V5
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             41
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT#POTC
+            Description :
+                Selection of the country for the POTS mode.
+            Applicable to : S4 / S5 / S+ / SxS
+            Format :
+                AT#POTC=n
+                     n = 0 : France
+                     n = 1 : North America
+                     n = 2 : Japan
+                     n = 3 : United Kingdom
+
+            Command to display the current configuration:
+                      AT&V5
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             42
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+                         4.10. Memory management
+
+      AT#MER
+            Description:
+                Recall the codec configuration parameters from a memory.
+                Refer to the user manual for the list of parameters affected by this command.
+            Applicable to : HS3 / S3
+            Format:
+                AT#MER=n
+                     n is the memory number (1 to 50)
+
+
+      AT#MEE
+            Description:
+                Store the current coding configuration in a memory.
+                Refer to the user manual for the list of parameters affected by this command.
+            Applicable to : HS3 / S3
+            Format:
+                AT#MEE=n
+                     n is the memory number (1 to 50)
+
+
+      AT#MEN
+            Description:
+                Change the name (or label) of a memory.
+            Applicable to : HS3 / S3
+            Format:
+                AT#MENn=NAME
+                     n is the memory number (1 to 50)
+                     The name must be max. 16 characters long. Only capital letters (low case are forced to
+                     capital letters).
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             43
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT#NAC
+            Description :
+                Memory operation mode control.
+            Applicable to : HS3 / S3
+            Format :
+                AT#NAC=n
+                     n= 0                               Common dial number set for all memories (i.e. memory recall does not affect
+                                                        the dial numbers)
+                                     n= 1               Each memory has its own dial number set
+            Example:
+                                     AT#NAC=1
+                                     OK
+            Command to display the current configuration:
+                      AT&V9
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                      44
+This document is the property of AETA and can not be duplicated without authorisation   March 2018                      55 000 047-P AARC protocol.docx
+                         4.11. Configuration and status display
+
+      AT&V0
+            Description :
+                Display of the current dial numbers, local numbers and answering modes.
+                The current settings for the auto-redial and the loop control features are also displayed.
+            Applicable to : all units
+            Format :
+                AT&V[0]
+            Example:
+                                     AT&V0
+
+                                     #NET=0      ==> ISDN
+                                     #NUM1=123456789*4444
+                                     #NUM2=123456789*4445
+                                     #NUM3=45632189
+                                     #NUM4=45632190
+                                     #NUM5=465128
+                                     #NUM6=465129
+                                     #NUM7=45632192
+                                     #NUM8=45632192
+                                     #LOC1=333
+                                     #LOC2=
+                                     #LOC3=
+                                     #LOC4=
+                                     #LOC5=
+                                     #LOC6=
+                                     #LOC7=
+                                     #LOC8=
+                                     #AUTO1=1
+                                     #AUTO2=1
+                                     #5AS=1 ==> On
+                                     #RED1=0     Auto-redial disabled on codec 1 (see AT#REDi)
+                                     #RED2=0
+                                     #LCT=0
+                                     #LLBC=5
+                                     #LLBR=0
+
+                                     OK
+
+            Number allocation :
+                       1, 2, 3, 4, 5, or 6 for single codec mode
+                       7 for the «1st codec» in dual codec mode
+                       8 for the «2nd codec» in dual codec mode
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             45
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT&V1
+            Description :
+                Display of the codec and audio interfaces configuration.
+            Applicable to : all units
+            Format :
+                AT&V1
+            Example:
+                                     AT&V1
+
+                                     #TYP=3 ==> AES/EBU 48kHz         (not returned by S+)
+                                     #SYNC=0 ==> AES Genlock          (only returned by S4+/S5/SxS)
+                                     #AES=1 ==> AES 48 kHz            (only returned by S4+/S5/SxS)
+                                     #FRE=0 ==> 48 kHz
+                                     #SEL=0 ==> NORMAL (single)       (not returned by S+)
+                                     #SELIP=0 ==> NORMAL (single)     (only returned by S5S)
+                                     #COD1=4 ==> MPEG Layer2 J52 / STEREO
+                                     #COD2=1                          (only in double codec mode)
+                                     #CHD1=192 ==> 192 KB/S 3B
+                                     #CHD2=64                         (only in double codec mode)
+                                     #COR=0 ==> MODE 0
+                                     #GIN=22
+                                     #GOUT=16
+                                     #ZIN=0 ==> 600 Ohm               (only returned by S4/S5/SxS)
+                                     #IMP=0 ==> 600 Ohm               (only returned by HS3 / S3)
+                                     #CHS1=1                          (only returned by S+)
+                                     #CHS2=0                          (only returned by S+)
+                                     #CHS3=1                          (only returned by S+)
+                                     #USBA=0                          (only returned by S+)
+                                     #GIS1=2                          (only returned by S+)
+                                     #GIS2=0                          (only returned by S+)
+                                     #GIS3=0                          (only returned by S+)
+                                     #LIM1=1                          (only returned by S+)
+                                     #LIM2=0                          (only returned by S+)
+                                     #LIM3=0                          (only returned by S+)
+                                     #PWR1=1                          (only returned by S+)
+                                     #PWR2=2                          (only returned by S+)
+                                     #PWR3=0                          (only returned by S+)
+                                     #HPF1=1                          (only returned by S+)
+                                     #HPF2=0                          (only returned by S+)
+                                     #HPF3=0                          (only returned by S+)
+                                     #CHR1=0                          (only returned by S+)
+                                     #CHR2=2                          (only returned by S+)
+                                     #CHR3=0                          (only returned by S+)
+                                     #CPM=1                           (only returned by S+)
+                                     #PAD3=1                          (only returned by S+)
+                                     #OSEL=1                          (only returned by S+)
+                                     #CCR1=0                          (only returned by S+)
+                                     #CCR2=2                          (only returned by S+)
+                                     #REP=0                           (only returned by S5/S+)
+
+                     OK
+      Warning: this example is a compilation of lines (#xxx=...) possibly included in the answer to the
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             46
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      command. Each line can be seen, but the whole combination as above is in fact impossible!
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             47
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT&V2
+            Description :
+                Display of the auxiliary functions configuration.
+            Applicable to : all units
+            Format :
+                AT&V2
+            Example:
+                                     AT&V2
+
+                                     #CDA=1 ==> ON
+                                     #STO=0 ==> 1 stop bit
+                                     #DAT=1 ==> 8 bits
+                                     #PAR=0 ==> None
+                                     #BAU=4 ==> 9600 bits/s
+                                     #VOR=0 ==> OFF                                     (not returned by S+)
+                                     #REL=1 ==> ACTIVE
+                                     #GPI1=0                                            (S4 / S5 / S+ / SxS)
+                                     #GPI2=1                                            (S4 / S5 / S+ / SxS)
+                                     #GPO1=0                                            (S4 / S5 / S+ / SxS)
+                                     #GPO2=0                                            (S4 / S5 / S+ / SxS)
+
+                                     OK
+
+
+      AT&V3
+            Description :
+                Display of codec alarms in the current language. Codec alarms are listed in free text format.
+            Applicable to : HS3 / S3 / S4
+            Format :
+                AT&V3
+            Example:
+                                     AT&V3
+
+                                     ALARM
+                                        NO ALARM
+
+                                     OK
+            Note :
+                AT#SUP command is preferred for a management system in order to get numerical and language-
+                insensitive codes.
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             48
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT&V4
+            Description :
+                                             Display of the possible bit rate settings for the current coding algorithm.
+            Applicable to : HS3 / S3
+            Format :
+                AT&V4
+            Example:
+                                     AT&V4
+
+                                     CHOICE
+                                                                   #CHD1=64 ==> 64 KB/S 1B
+                                                                   #CHD1=128 ==> 128 KB/S 2B
+                                                                   #CHD1=192 ==> 192 KB/S 3B
+                                                                   #CHD1=256 ==> 256 KB/S 4B
+                                                                   #CHD1=320 ==> 320 KB/S 5B
+                                                                   #CHD1=384 ==> 384 KB/S 6B
+
+                                     OK
+
+
+      AT&V5
+            Description :
+                Display of the current country configuration parameters.
+            Applicable to : all units
+            Format :
+                AT&V5
+            Example:
+                                     AT&V5
+
+                                     #LAN=1 ==> English
+                                     #ISDN=1 ==> Euro ISDN
+
+                                     OK
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                     49
+This document is the property of AETA and can not be duplicated without authorisation   March 2018                     55 000 047-P AARC protocol.docx
+      AT&V6
+            Description :
+                Display of alarm masks
+            Applicable to : HS3 / S3
+            Format :
+                AT&V6
+            Example:
+                                     AT&V6
+
+                                     #MAL1=255
+                                     #MAL2=255
+                                     #MAL3=255
+
+                                     OK
+
+                                     See AT#MAL command for the bit mapping in the masks.
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             50
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT&V7
+            Description :
+                Display of the negotiated codec configuration (during a connection):
+                Display of the encoder (COD)
+                          Algorithm
+                          Bit rate
+                          Possible error correction mode
+                Display of the decoder (DEC)
+                          Algorithm
+                          Bit rate
+                          Possible error correction mode
+            Applicable to : all units
+            Format :
+                AT&V7
+            Example:
+                                     AT&V7
+
+                                     CODEC 1:
+                                     COD:
+                                     #COD1=4 ==> MPEG Layer2 J52 / STEREO
+                                     #CHD1=192 ==> 192 KB/S 3B
+                                     #COR=0 ==> MODE 0
+                                     DEC:
+                                     #COD1=4 ==> MPEG Layer2 J52 / STEREO
+                                     #CHD1=192 ==> 192 KB/S 3B
+                                     #COR=0 ==> MODE 0
+
+                                     OK
+
+
+      AT&V8
+            Description :
+                Display of the control port configuration
+            Applicable to : HS3 / S3
+            Format :
+                AT&V8
+            Example:
+                                     AT&V8
+
+                                     #STO_X=0 ==> 1 stop bit
+                                     #DAT_X=1 ==> 8 bits
+                                     #PAR_X=0 ==> None
+                                     #BAU_X=4 ==> 9600 bits/s
+
+                                     OK
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             51
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      AT&V9
+            Description :
+                Display of the configuration of the incoming call filtering, plus the memory operation mode and
+                the IP network configuration.
+            Applicable to : all units
+            Format :
+                AT&V9
+            Example:
+                                     AT&V9
+
+                                     #TAE=2 ==> Data calls
+                                     #TFS=1 ==> Proprietary
+                                     #NAC=0 ==> 1 global set       (only HS3 / S3)
+                                     #HLC=1 ==> No                 (only HS3 / S3)
+                                     #NBR=0 ==> Infinite number of attempts for auto-redial is active
+                                     #TTR=5 ==> Time to redial is 5 seconds
+                                     #IPQ=1 ==> “IP Quality” setting is “Middle”
+                                     #DHCP=0
+                                     #IP=10.0.20.33
+                                     #IPM=255.255.255.0
+                                     #GW=10.0.20.254
+                                     #DNS=10.0.20.3
+                                     OK
+
+
+      AT&V10
+            Description :
+                Display a list of options installed in the unit
+
+
+            Applicable to : S4 / S5 / SxS
+            Format :
+                AT&V10
+            Example:
+                                     AT&V10
+
+                                     #PSTN=0                                                         => POTS not installed
+                                     #NB_ISDN=1                                                      => 1 ISDN interface (1B/2B)
+                                     #TDAC=0                                                         => TDAC not installed
+                                     #TDAC_ASYMMETRIC=0                                              => “asymmetric TDAC” not installed
+                                     #AAC=1                                                          => AAC option installed
+                                     #MOBILE=0                                                       => Mobile option not installed
+
+                                     OK
+
+                     Answer format: #OPTxx=n
+                            n=0 : Option OPTxx not installed
+                            n=1 : Option installed
+                            For NB_ISDN: 0 => no ISDN interface, 1 => 1 ISDN line, 2 => 2 ISDN lines
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                              52
+This document is the property of AETA and can not be duplicated without authorisation   March 2018                              55 000 047-P AARC protocol.docx
+      AT&V11
+            Description :
+                Display the configuration of the events mask
+
+
+            Applicable to : S4 / S5 / SxS
+            Format :
+                AT&V11
+            Example:
+                                     AT&V11
+
+                                     #RINGING_1=1                                                    => Event “Ring” active on codec 1
+                                     #CALLING_1=0                                                    => Event “Calling” masked on codec 1
+                                     #ESTABLISHED_1=1                                                => Event “Established” active on codec 1
+                                     #RELEASED_1=1                                                   => Event “Released” active on codec 1
+                                     #RINGING_2=1                                                    => Event “Ring” active on codec 2
+                                     #CALLING_2=0                                                    => Event “Ring” masked on codec 2
+                                     #ESTABLISHED_2=0                                                => Event “Ring” masked on codec 2
+                                     #RELEASED_2=1                                                   => Event “Ring” active on codec 2
+
+                                     OK
+
+                     Answer format: #EVENT_i=m
+                            i=1 : Event on codec 1
+                            i=2 : Event on codec 2
+                            m=0 : Event type masked on codec i
+                            m=1 : Event type active on codec i
+
+
+
+      AT&V20
+            Description :
+                Display audio levels
+
+
+            Applicable to : S4 / S5 / SxS
+            Format :
+                AT&V20
+            Example:
+                                     AT&V20
+
+                                     #LVL=20,18,3,4                                         => -20 dBFS on Tx left, ..., -4 dBFS on Rx right
+                                     OK
+
+                     Answer format: #LVL=n,p,q,r
+                            Level on Tx left = -n dBFS
+                            Level on Tx right = -p dBFS
+                            Level on Rx left = -q dBFS
+                            Level on Rx right = -r dBFS
+                            99 equivalent to - (“total” silence)
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                                  53
+This document is the property of AETA and can not be duplicated without authorisation   March 2018                                  55 000 047-P AARC protocol.docx
+      AT&V21
+            Description :
+                Mobile network status display
+                Shows the registration status (0: not registered, 1: registered) and the current type of network the
+                unit is registered to, among the following possible values:
+                     GSM                               (2G)
+                     GPRS                              (2G)
+                     EDGE                              (2G)
+
+                               UMTS                                                     (3G)
+                               HSDPA                                                    (3G)
+                               HSUPA                                                    (3G)
+                               HSDPA/ HSUPA                                             (3G)
+                               HSPA+                                                    (3G)
+
+                               LTE                                                      (4G)
+                               XXX                                                      (unknown status, error)
+
+
+            Applicable to : S5 / S+ / SxS
+            Format :
+                AT&V21
+            Example:
+                                     AT&V21
+
+                                     #CREG=1                                                   Registered on the mobile network
+                                     #CNTI=HSDPA                                               => Network is currently 3G technology (HSDPA)
+                                     OK
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                                 54
+This document is the property of AETA and can not be duplicated without authorisation      March 2018                              55 000 047-P AARC protocol.docx
+      AT#SUP
+      This command is intended for use by a supervisory equipment. Answers to this command are independent
+      on the selected language.
+            Description :
+                Global supervisory command. Allows single command interrogation of the device in order to
+                acquire the equipment status and the current value of some configuration parameters.
+            General comments :
+                The position of some fields may be changed, and fields may be absent.
+                Future commands may be added.
+            Applicable to : all units
+            Format :
+                AT#SUP[nnn]
+                     nnn is a binary mask (in decimal format) filtering the answer. For each bit bi in the mask,
+                     the corresponding information is enabled if bi = 1. If nnn is not specified, it defaults to
+                     511 (all information display is enabled).
+
+                                     Mask bit to information type mapping:
+                                     b0 (LSB): current configuration number (obsolete, see 6.5,AT#NCF, p. 40)
+                                     b1 : test loops,
+                                     b2 : alarms,
+                                     b3 : codec status only,
+                                     b4 : codec and simple communication status,
+                                     b5 : codec and detailed communication status,
+                                     b6 : incoming call requests,
+                                     b7 : options available in the device,
+                                     b8 (MSB) : transmission errors monitoring (obsolete,see 6.5,AT#PERF, p. 40)
+
+            Format of the answer to a configuration number request (b0=1) :
+                CFG=0           (fixed answer)
+            Format of the answer to a test loops request (b1=1) :
+                BOU=n
+                        n : loop type:
+                        n=0 : no loop,
+                        n=1 : AD/DA loopback.
+                        n=2 : « type 2 » loop.
+                        n=3 : « type 3 » loop.
+                        n=4 : analogue output to input loopback
+                        n=5 : coding test                                                            (not implemented)
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                       55
+This document is the property of AETA and can not be duplicated without authorisation   March 2018                       55 000 047-P AARC protocol.docx
+            Format of the answer to an alarm request (b2=1) :
+                ALA:D1=x,D2=y,D3=z
+                        x : First alarm byte
+                        b0 : Fuse failure               (not returned by S+)
+                        b1 :
+                        b2 : Left decoder fault
+                        b3 : Right decoder fault
+                        b4 : Input overload
+                        b5 : Data channel fault
+                        b6 :
+                        b7 : AES input fault            (not returned by S+)
+
+                                     y : Second alarm byte
+                                     b0 :
+                                     b1 :
+                                     b2 :
+                                     b3 : Sampling rate error
+                                     b4 :
+
+                                     z : Third alarm byte
+                                     b0 : Encoder 1 fallback
+                                     b1 : Decoder 1 fallback
+                                     b2 :
+                                     b3 :
+                                     b4 : Encoder 2 fallback                            (not returned by S+)
+                                     b5 : Decoder 2 fallback                            (not returned by S+)
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             56
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+            Format of the answer to a communication status request (b3=1,b4=1,b5=1) :
+                COD1:S=s                                      (information for codec 1)
+                –C1=x,N1=Num*SA,CLS=y,VAL=z
+                …
+                -Ci=x,Ni=Num*SA,CLS=y,VAL=z                   (when significant)
+                COD2:S=s                                      (information for codec 2, for dual codec mode only)
+                –C1=x,N1=Num*SA,CLS=y,VAL=z
+                        s : codec status:
+                        0 : idle
+                        1 : Call : 1st call in progress
+                        2 : Call : 1st call connected
+                        3 : Call : negotiating
+                        4 : Call : connecting other channels
+                        5 : Answer : 1st call waiting for manual answer
+                        6 : Answer : 1st call in progress
+                        7 : Answer : 1st call connected
+                        8 : Answer : negotiating
+                        9 : Answer: other channels connected
+                        10 : End of negotiation
+                        11 : All links established (All links needed for the codec are done)
+                        12 : Disconnection in progress
+                        13 : Codec disconnection request
+                        14 : Wait for codec disconnection acknowledgement
+                        15 : Outgoing call request under process
+
+                                     i : Number of a connection/B channel (i = 1 to 6)
+
+                                     x : Status of a connection/B channel link
+                                     0 : Idle connection
+                                     1 : Call in progress
+                                     2 : Search
+                                     3 : Ring
+                                     4 : Connection
+                                     5 : Disconnection request
+                                     6 : Disconnection
+                                     7 : Connected outgoing call     (only for S4/S5)
+                                     8 : Connected incoming call     (only for S4/S5)
+                                     Num : ISDN number of the remote terminal for this ISDN connection.
+
+                                     SA: Sub-Address of remote terminal for this ISDN connection.
+
+                                     Y : ISDN error class describing last call failure.
+                                     Z : ISDN error code describing last call failure.
+                                     Note: x and y are reset to zero at beginning of any call.
+
+                     A zero on bit b4 hides the status of the connections (-Ci…), thus displaying the codec status only.
+                     A zero on bit b5 deletes the following fields in the connection status lines (-Ci…):
+                             ,Ni=Num*SA,CLS=y,VAL=z.
+            Format of the answer to an incoming call status request (b6=1) :
+                ENT:APPEL1=x,APPEL2=x                    (,APPEL2=x only appears in dual codec mode)
+                        x:      0 = No incoming call waiting
+                                1 = Incoming call waiting
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             57
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+            Format of the answer to a request for available options (b7=1) :
+                USI: DEP=1,AES=b, V8K=c,FIL=d,DSP=0,RSC=1,AL3=g,TDA=h,A64=0,CCS=1
+                        b:      0 = AES interface module absent
+                                1 = AES interface module installed
+
+                                     c:              0 = Auxiliary audio channel absent
+                                                     1 = Auxiliary audio channel installed
+
+                                     d:              Number of available BRI / ISDN interfaces (d = 1 to 3)
+
+                                     g:              0 = MPEG Layer 3 not available
+                                                     1 = MPEG Layer 3 installed
+
+                                     h:              0 = TDAC not available
+                                                     1 = TDAC option installed
+            Format of the answer to a transmission error monitoring request (b8=1) : (HS3 / S3)
+                PERF:
+                -DMIN=x,y,
+                        This information should be ignored as it relates to a deleted function
+            Example:
+               In this example, the codec is equipped with 3 BRI, and includes an AES interface module. A
+               connection is established in single codec mode at 192 kbit/s (3 B channels).
+                        AT#SUP254
+                        BOU=0
+                        ALA:D1=0,D2=0,D3=0
+                        COD1:S=11
+                        -C1=4,N1=0145236852,CLS=0,VAL=0
+                        -C2=4,N2=0145236852,CLS=0,VAL=0
+                        -C3=4,N3=0145236853,CLS=0,VAL=0
+                        -C4=0,N4=,CLS=0,VAL=0
+                        -C5=0,N5=,CLS=0,VAL=0
+                        -C6=0,N6=,CLS=0,VAL=0
+                        ENT :APPEL1=0
+                        USI:DEP=1,AES=1,V8K=0,FIL=3,DSP=0,RSC=1,AL3=1,TDA=1,A64=0,CCS=1
+                        OK
+            Notes :
+                AT#SUP is the only command that can be sent after a ATDSi dialling command waiting for
+                CONNECT or NO CARRIER. It can thus be used at this time to monitor outgoing calls.
+                For Scoop4+, Scoop 5 or Scoopy+, only AT#SUP is allowed.
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual             58
+This document is the property of AETA and can not be duplicated without authorisation   March 2018             55 000 047-P AARC protocol.docx
+      5. AT command answers
+
+                         5.1. Answer messages
+
+                      OK                                              Command is processed normally
+                      ERROR (n)                                       Command error, error code = n
+                      NOPASSWD                                        Password missing for this command (control session not opened)
+                      CONNECT 1                                       Connected on codec 1
+                      CONNECT 2                                       Connected on codec 2
+                      NOCARRIER 1                                     Disconnected on codec 1
+                      NOCARRIER 2                                     Disconnected on codec 2
+                      TRANSPARENT                                     Ready for software download on DSP board
+
+
+                         5.2. Unsolicited event messages
+      Some messages are sent by the unit without being solicited by an AT command; such messages are event-
+      driven, i.e. are triggered by an event.
+      It is possible to set each event type as masked or enabled, using suitable commands (see above in 4.8.
+      System and test commands).
+
+
+                      $RINGING_i                                            Incoming call received on codec i
+                                                                            (i = 1 for codec 1, 2 for codec 2)
+                      $CALLING_i                                            Outgoing call initiated on codec i
+                                                                            (i = 1 for codec 1, 2 for codec 2)
+                      $ESTABLISHED_i                                        Connection established on codec i
+                                                                            (i = 1 for codec 1, 2 for codec 2)
+                      $RELEASED_i                                           Connection released on codec i
+                                                                            (i = 1 for codec 1, 2 for codec 2)
+      Event messages are not sent by S3 and HS3.
+
+                         5.3. Messages for audio levels
+      These messages are sent periodically using UDP, without being solicited by an AT command.
+      The destination address and port, and the refresh interval are set using the command AT#VISU (see
+      above in 4.4. IP network settings, page 19).
+      Message format: $BAR=n,p,q,r
+              Level on Tx left = -n dBFS
+              Level on Tx right = -p dBFS
+              Level on Rx left = -q dBFS
+              Level on Rx right = -r dBFS
+              99 equivalent to - (“total” silence)
+      Example:
+              $BAR=20,18,3,4          => -20 dBFS on Tx left, ..., -4 dBFS on Rx right
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                            59
+This document is the property of AETA and can not be duplicated without authorisation   March 2018                            55 000 047-P AARC protocol.docx
+                         5.4. Error codes
+
+                                     1               “=” sign missing
+                                     2               Too long ISDN number
+                                     3               Too long ISDN sub-address
+                                     4               Parameter out of boundaries
+                                     7               Unknown command
+                                     10              Unavailable loop
+                                     20              Command applicable to unavailable second codec
+                                     21              Invalid because the codec is busy (connection running)
+                                     22              Dial number(s) missing for a call
+                                     23              Invalid because the codec is idle (no connection running)
+                                     24              Wrong codec number
+                                     25              Inconsistent selection (type 1)
+                                     26              Inconsistent selection (type 2)
+                                     27              Inconsistent selection (type 3)
+                                     30              Codec 2 unavailable
+                                     31              Incorrect bit rate/B channel number
+                                     40              Back on line requested for disconnected equipment
+                                     50              Command not available in remote maintenance operation
+                                     51              Missing password
+                                     52              Codec initialisation in progress
+                                     53              Invalid password
+                                     60              single/dual communication switching not allowed in remote operation.
+                                     70              No incoming call on this CODEC
+
+
+
+                                     1               “=” sign missing
+                                     2               Too long ISDN number
+                                     3               Too long ISDN sub-address
+                                     4               Parameter out of boundaries
+                                     7               Unknown command
+                                     10              Unavailable loop
+                                     20              Command applicable to unavailable second codec
+                                     21              Invalid because the codec is busy (connection running)
+                                     22              Dial number(s) missing for a call
+                                     23              Invalid because the codec is idle (no connection running)
+                                     24              Wrong codec number
+                                     25              Inconsistent selection (type 1)
+                                     26              Inconsistent selection (type 2)
+                                     27              Inconsistent selection (type 3)
+                                     30              Codec 2 unavailable
+                                     31              Incorrect bit rate/B channel number
+                                     40              Back on line requested for disconnected equipment
+                                     50              Command not available in remote maintenance operation
+                                     51              Missing password
+                                     52              Codec initialisation in progress
+                                     53              Invalid password
+                                     60              single/dual communication switching not allowed in remote operation.
+                                     70              No incoming call on this CODEC
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                    60
+This document is the property of AETA and can not be duplicated without authorisation   March 2018                    55 000 047-P AARC protocol.docx
+      6. AT command alphabetical list
+
+                         Syntax                                                         Function                     Category
+       AT#5AS=n                                              Activation of 5A System                    System and test commands
+       AT#AES                                                AES interface sampling frequency           Audio configuration
+       AT#AUTOi=n                                            Automatic answering mode                   Call control
+       AT#BAU_X=n                                            Control port baud rate                     System and test commands
+       AT#BAU=n                                              Data channel baud rate                     Auxiliary functions configuration
+       AT#BOU=n                                              Test loops                                 System and test commands
+       AT#CALLING_i=m                                        Configure "Calling" events                 System and test commands
+       AT#CCRi=n                                             Coordination channel routing               Audio configuration
+       AT#CDA=n                                              Data channel activation                    Auxiliary functions configuration
+       AT#CHDi=n                                             Coding bit rate selection                  Coding configuration
+       AT#CHRi=n                                             Mic/Line input routing                     Audio configuration
+       AT#CHSi=n                                             Channel switch                             Audio configuration
+       AT#CLK=n                                              Clock mode                                 Coding configuration
+       AT#CODi=n                                             Coding algorithm selection                 Coding configuration
+       AT#COP=n                                              Copyright configuration (MPEG)             Coding configuration
+       AT#COR=n                                              Error correction mode (MPEG)               Coding configuration
+       AT#CPM=n                                              Channel panning mode                       Audio configuration
+       AT#DAT_X=n                                            Control port bit number                    System and test commands
+       AT#DAT=n                                              Data channel bit number                    Auxiliary functions configuration
+       AT#DHCP=n                                             Addressing mode DHCP/static                IP network settings
+       AT#DIA=n                                              Dial method                                Call control
+       AT#DNS=n.p.q.r                                        DNS address (static IP mode)               IP network settings
+       AT#ESTABLISHED_i=m                                    Configure "Established" events             System and test commands
+       AT#EXI                                                Closure of a control session               Session and password management
+       AT#FRE=n                                              Coding sampling rate selection             Coding configuration
+       AT#GIN=n                                              Maximum input level configuration          Audio configuration
+       AT#GISi=n                                             Mic/Line input gain select                 Audio configuration
+       AT#GOUT=n                                             Maximum output level configuration         Audio configuration
+       AT#GPIi=n                                             Force state of a GPI                       Auxiliary functions configuration
+       AT#GPOi=n                                             Force state of a GPO                       Auxiliary functions configuration
+       AT#GW=n.p.q.r                                         Default gateway (static IP mode)           IP network settings
+       AT#H[n]                                               On line help                               General commands
+       AT#HLC=n                                              HLC enabling                               Call control
+       AT#HPFi=n                                             Mic/Line input HP filter                   Audio configuration
+       AT#IMP=n                                              Output load impedance selection            Audio configuration
+       AT#IP=n.p.q.r                                         IP address of equipment (static mode)      IP network settings
+       AT#IPM=n.p.q.r                                        Sub-network mask (static IP mode)          IP network settings
+       AT#IPQ=n                                              IP network quality                         IP network settings
+       AT#ISDN=n                                             ISDN protocol selection                    Country configuration commands
+       AT#LAN=n                                              Display language selection                 Country configuration commands
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                        61
+This document is the property of AETA and can not be duplicated without authorisation      March 2018                     55 000 047-P AARC protocol.docx
+                      Syntax                                                            Function               Category
+       AT#LCT=n                                       Loop control mode                          Call control
+       AT#LEV=n                                       Line level                                 Coding configuration
+       AT#LIMi=n                                      Channel limiter activation                 Audio configuration
+       AT#LLBC=n                                      Backup call for LL backup                  Call control
+       AT#LLBR=n                                      Backup receive mode for LL backup          Call control
+       AT#LOCn=nnnn*sss                               Local number and sub-address setting       Call control
+       AT#MALn=m                                      Alarm mask programming                     System and test commands
+       AT#MEE=n                                       Store a configuration memory               Memory management
+       AT#MENn=NAME                                   Name a configuration memory                Memory management
+       AT#MER=n                                       Recall a configuration memory              Memory management
+       AT#NAC=n                                       Memory operation mode                      Memory management
+       AT#NBR=n                                       Redial, number of retries                  Call control
+       AT#NET=n                                       Selection of active transmission interface Call control
+       AT#NPW=password                                New password programming                   Session and password management
+       AT#NUMn=nnnn*sss                               Dial number and sub-address                Call control
+                                                      programming
+       AT#ORI=n                                       Original/Copy configuration (MPEG)         Coding configuration
+       AT#OSEL=n                                      Output signal selection                    Audio configuration
+       AT#PADi=n                                      Mic/Line input attenuation pad             Audio configuration
+       AT#PAR_X=n                                     Control port parity                        System and test commands
+       AT#PAR=n                                       Data channel parity                        Auxiliary functions configuration
+       AT#POTC=n                                      POTS line country selection                Country configuration commands
+       AT#PWD=password                                Opening of a control session               Session and password management
+       AT#PWRi=n                                      Mic/Line input powering                    Audio configuration
+       AT#REDi=n                                      Auto redial mode                           Call control
+       AT#REL=n                                       Relay transmission activation              Auxiliary functions configuration
+       AT#RELEASED_i=m                                Configure "Released" events                System and test commands
+       AT#REP=n                                       Packet duplication mode                    IP network settings
+       AT#RINGING_i=m                                 Configure "Ringing" events                 System and test commands
+       AT#SEL=n                                       Single/Dual codec mode                     Coding configuration
+       AT#SMS="string"                                Send message to front panel display        Auxiliary functions configuration
+       AT#SPD=n                                       Speed                                      Coding configuration
+       AT#STO_X=n                                     Control port stop bits                     System and test commands
+       AT#STO=n                                       Data channel stop bits                     Auxiliary functions configuration
+       AT#SUP[n]                                      Global supervisory command                 Configuration and status display
+       AT#SYNC                                        AES interface synchronization mode         Audio configuration
+       AT#TAE=n                                       Incoming calls filtering                   Call control
+       AT#TFS=n                                       Proprietary call filtering                 Call control
+       AT#TON=n                                       Dial tone                                  Call control
+       AT#TTR=n                                       Redial, time to redial                     Call control
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                    62
+This document is the property of AETA and can not be duplicated without authorisation         March 2018              55 000 047-P AARC protocol.docx
+                      Syntax                                                            Function                         Category
+       AT#TYP=n                                       Audio interface format selection                     Audio configuration
+       AT#USBA=n                                      USB audio input switch                               Audio configuration
+       AT#VISU=n.p.q.r:port                           Configure periodic audio level packets               IP network settings
+       time
+       AT#VOR=n                                       Auxiliary audio channel                              Auxiliary functions configuration
+       AT#ZIN                                         Input impedance selection                            Audio configuration
+       AT&V[0]                                        Dial numbers, local numbers and                      Configuration and status display
+                                                      answering modes display
+       AT&V1                                          Codec and audio interface configuration              Configuration and status display
+                                                      display
+       AT&V10                                         Display list of installed options                    Configuration and status display
+       AT&V11                                         Display events mask                                  Configuration and status display
+       AT&V2                                          Auxiliary functions configuration display            Configuration and status display
+       AT&V20                                         Get audio levels                                     Configuration and status display
+       AT&V21                                         Mobile network status                                Configuration and status display
+       AT&V3                                          Codec alarms display                                 Configuration and status display
+       AT&V4                                          Available bit rates                                  Configuration and status display
+       AT&V5                                          Country configuration display                        Configuration and status display
+       AT&V6                                          Alarm masks display                                  Configuration and status display
+       AT&V7                                          Negotiated codec configuration display               Configuration and status display
+       AT&V8                                          Control port configuration display                   Configuration and status display
+       AT&V9                                          Display incoming calls filtering and IP              Configuration and status display
+                                                      network configuration
+       ATAn                                           Accept an incoming call                              Call control
+       ATDS[n]                                        Call initiation                                      Call control
+       ATEn                                           Local echo control                                   General commands
+       ATH[n]                                         Link termination                                     Call control
+       ATI[n]                                         Equipment identification                             General commands
+       ATZ                                            Reset the device                                     General commands
+
+
+
+
+   55000 047 – Ed. P                                         AARC Remote Control Protocol - Reference Manual                                63
+This document is the property of AETA and can not be duplicated without authorisation         March 2018                          55 000 047-P AARC protocol.docx
+
