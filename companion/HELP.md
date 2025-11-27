@@ -215,7 +215,7 @@ The module includes comprehensive error handling:
 
 ## Version History
 
-### Version 1.0.4-beta
+### Version 1.1.0-beta
 * Implemented real-time VU Metering (Tx/Rx Levels)
 * Improved status reporting and error handling
 

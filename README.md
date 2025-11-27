@@ -183,7 +183,7 @@ Utilities folder contains reference files for developers as well as a dial pad c
  
  ## Version History
  
- ### 1.0.4-beta
+ ### 1.1.0-beta
  - Implemented real-time VU Metering (Tx/Rx Levels)
  - Improved status reporting and error handling
  
