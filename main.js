@@ -792,10 +792,10 @@ class AETAModule extends InstanceBase {
     }
 
     this.setVariableValues({
-      ringing: this.feedbackState.ringing ? 'True' : 'False',
-      calling: this.feedbackState.calling ? 'True' : 'False',
-      established: this.feedbackState.established ? 'True' : 'False',
-      released: this.feedbackState.released ? 'True' : 'False'
+      ringing: this.feedbackState.ringing,
+      calling: this.feedbackState.calling,
+      established: this.feedbackState.established,
+      released: this.feedbackState.released
     });
 
     this.checkFeedbacks('ringing', 'calling', 'established', 'released');
