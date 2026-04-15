@@ -182,7 +182,11 @@ Utilities folder contains reference files for developers as well as a dial pad c
  - Hardware alarms
  
  ## Version History
- 
+
+ ### 1.1.2-beta
+ - Fixed states are now stored as booleans
+ - Fixed number/SIP field not being parsed properly
+
  ### 1.1.1-beta
  - Implemented real-time VU Metering (Tx/Rx Levels)
  - Improved status reporting and error handling

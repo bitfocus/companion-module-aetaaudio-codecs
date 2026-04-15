@@ -215,6 +215,10 @@ The module includes comprehensive error handling:
 
 ## Version History
 
+### Version 1.1.2-beta
+* Fixed states are now stored as booleans
+* Fixed number/SIP field not being parsed properly
+
 ### Version 1.1.1-beta
 * Implemented real-time VU Metering (Tx/Rx Levels)
 * Improved status reporting and error handling
