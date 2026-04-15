@@ -32,8 +32,8 @@ module.exports = {
 		  }
 		  // Otherwise, concatenate the key to the variable
 		  let key = event.options.key;
-		  if (instance.parseVariables) {
-			key = await instance.parseVariables(key);
+		  if (instance.parseVariablesInString) {
+			key = await instance.parseVariablesInString(key);
 		  }
 		  if (!key) {
 			instance.log('warn', 'No key provided for keypad action');
@@ -71,8 +71,8 @@ module.exports = {
 			  return;
 			}
 			let number = event.options.number;
-			if (instance.parseVariables) {
-			  number = await instance.parseVariables(number);
+			if (instance.parseVariablesInString) {
+			  number = await instance.parseVariablesInString(number);
 			}
 			if (!number) {
 			  instance.log('warn', 'No number provided for dial action');
@@ -86,6 +86,7 @@ module.exports = {
 			  // Then initiate the call as a separate command
 			  await instance.sendCommand('ATDS1');
 			  instance.log('info', `Dialing ${number}`);
+			  instance.setVariableValues({ keyPadInput: '' });
 			  instance.debouncedRefreshData(); // Use debounced version
 			} catch (error) {
 			  instance.log('error', `Failed to dial: ${error.message}`);
