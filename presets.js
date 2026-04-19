@@ -5,9 +5,8 @@ const ICONS = require('./icons.js').default || require('./icons.js')
 function GetPresetsList() {
   const presets = {}
   presets['dial_and_hangup'] = {
-    category: 'Keypad',
+    type: 'simple',
     name: 'Dial & Hang Up',
-    type: 'button',
     style: {
       text: '',
       size: '18',
@@ -40,9 +39,8 @@ function GetPresetsList() {
   }
   for (let i = 0; i <= 9; i++) {
     presets[`keypad_${i}`] = {
-      category: 'Keypad',
+      type: 'simple',
       name: `Key ${i}`,
-      type: 'button',
       style: {
         text: `${i}`,
         size: '24',
@@ -67,9 +65,8 @@ function GetPresetsList() {
     }
   }
   presets['keypad_clear'] = {
-    category: 'Keypad',
+    type: 'simple',
     name: 'Clear',
-    type: 'button',
     style: {
       text: '',
       size: '24',
@@ -91,7 +88,29 @@ function GetPresetsList() {
     ],
     feedbacks: [],
   }
-  return presets
+
+  const structure = [
+    {
+      id: 'keypad_section',
+      name: 'Keypad',
+      definitions: [
+        {
+          id: 'keypad_group',
+          type: 'simple',
+          name: 'Keypad Actions',
+          presets: [
+             'dial_and_hangup',
+             'keypad_1', 'keypad_2', 'keypad_3', 
+             'keypad_4', 'keypad_5', 'keypad_6', 
+             'keypad_7', 'keypad_8', 'keypad_9', 
+             'keypad_clear', 'keypad_0'
+          ],
+        },
+      ],
+    },
+  ]
+
+  return { structure, presets }
 }
 
 module.exports = { GetPresetsList }

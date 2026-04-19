@@ -12,10 +12,10 @@
 		"url": "git+https://github.com/bitfocus/companion-module-aetaaudio-codecs.git"
 	},
 	"dependencies": {
-		"@companion-module/base": "~1.11.0"
+		"@companion-module/base": "^2.0.0"
 	},
 	"devDependencies": {
-		"@companion-module/tools": "^2.6.1",
+		"@companion-module/tools": "^3.0.0",
 		"eslint": "^9.31.0",
 		"prettier": "^3.3.3"
 	},

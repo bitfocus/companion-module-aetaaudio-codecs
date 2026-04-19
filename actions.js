@@ -11,6 +11,8 @@ module.exports = {
 			label: 'Clear Keypad',
 			id: 'clear',
 			default: false,
+			tooltip: 'If checked, this clears the current dial pad input',
+			disableAutoExpression: true
 		  },
 		  
 		  {
@@ -19,7 +21,8 @@ module.exports = {
 			id: 'key',
 			default: '',
 			tooltip: 'Enter a digit or character to add to the dial pad input',
-			isVisible: (options) => !options.clear,
+			isVisibleExpression: '!$(options:clear)',
+			useVariables: true,
 		  },
 
 		],
@@ -32,9 +35,6 @@ module.exports = {
 		  }
 		  // Otherwise, concatenate the key to the variable
 		  let key = event.options.key;
-		  if (instance.parseVariablesInString) {
-			key = await instance.parseVariablesInString(key);
-		  }
 		  if (!key) {
 			instance.log('warn', 'No key provided for keypad action');
 			return;
@@ -71,9 +71,6 @@ module.exports = {
 			  return;
 			}
 			let number = event.options.number;
-			if (instance.parseVariablesInString) {
-			  number = await instance.parseVariablesInString(number);
-			}
 			if (!number) {
 			  instance.log('warn', 'No number provided for dial action');
 			  return;
@@ -360,8 +357,7 @@ module.exports = {
 				id: 'gain',
 				default: 0,
 				min: 0,
-				max: 22,
-				required: true
+				max: 22
 			  }
 			],
 			callback: async (event) => {
@@ -437,7 +433,7 @@ module.exports = {
 			  id: 'command',
 			  default: '',
 			  tooltip: 'Enter the full AT# command, e.g., AT#CMD=VALUE or AT#CMD?',
-			  required: true
+			  minLength: 1
 			}
 		  ],
 		  callback: async (event) => {
@@ -469,8 +465,7 @@ module.exports = {
 				id: 'gain',
 				default: 0,
 				min: 0,
-				max: 22,
-				required: true
+				max: 22
 			  }
 			],
 			callback: async (event) => {
@@ -520,7 +515,7 @@ module.exports = {
 				id: 'ip',
 				default: '',
 				tooltip: 'Enter IP address (e.g., 192.168.1.100)',
-				required: true
+				minLength: 1
 			  }
 			],
 			callback: async (event) => {
@@ -544,7 +539,7 @@ module.exports = {
 				id: 'dns',
 				default: '',
 				tooltip: 'Enter DNS address (e.g., 8.8.8.8)',
-				required: true
+				minLength: 1
 			  }
 			],
 			callback: async (event) => {
@@ -568,7 +563,7 @@ module.exports = {
 				id: 'gw',
 				default: '',
 				tooltip: 'Enter gateway address (e.g., 192.168.1.1)',
-				required: true
+				minLength: 1
 			  }
 			],
 			callback: async (event) => {
@@ -592,7 +587,7 @@ module.exports = {
 				id: 'mask',
 				default: '',
 				tooltip: 'Enter subnet mask (e.g., 255.255.255.0)',
-				required: true
+				minLength: 1
 			  }
 			],
 			callback: async (event) => {
@@ -1407,7 +1402,7 @@ module.exports = {
 				label: 'Text Message',
 				id: 'sms',
 				default: '',
-				required: true
+				minLength: 1
 			  }
 			],
 			callback: async (event) => {

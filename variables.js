@@ -1,110 +1,110 @@
 module.exports = {
 	initVariables() {
-	  this.setVariableDefinitions([
-		{ variableId: 'connectionStatus', name: 'Connection Status' },
-		{ variableId: 'codecModel', name: 'Codec Model' }, // From ATI response
-		{ variableId: '5AS', name: '5A System Status' }, // AT#5AS
-		{ variableId: 'codingAlgorithm', name: 'Coding Algorithm' }, // AT#COD
-		{ variableId: 'networkType', name: 'Network Type' }, // AT#NET
-		{ variableId: 'ipQuality', name: 'IP Quality' }, // AT#IPQ
-		{ variableId: 'packetReplication', name: 'Packet Replication' }, // AT#REP
-		{ variableId: 'codingBitRate', name: 'Coding Bit Rate' }, // AT#CHD
-		{ variableId: 'codingSamplingRate', name: 'Coding Sampling Rate' }, // AT#FRE
-		{ variableId: 'maxInputLevel', name: 'Maximum Input Level' }, // AT#GIN
-		{ variableId: 'maxOutputLevel', name: 'Maximum Output Level' }, // AT#GOUT
-		{ variableId: 'localEcho', name: 'Local Echo' }, // ATE
-		{ variableId: 'dialMethod', name: 'Dial Method' }, // AT#DIA
-		{ variableId: 'dialTone', name: 'Dial Tone' }, // AT#TON
-		{ variableId: 'incomingCallFilter', name: 'Incoming Call Filter' }, // AT#TAE
-		{ variableId: 'proprietaryFilter', name: 'Proprietary ISDN Filter' }, // AT#TFS
-		{ variableId: 'hlc', name: 'HLC Enabling' }, // AT#HLC
-		{ variableId: 'autoRedial', name: 'Auto Redial' }, // AT#RED
-		{ variableId: 'redialRetries', name: 'Redial Retries' }, // AT#NBR
-		{ variableId: 'redialWaitTime', name: 'Redial Wait Time' }, // AT#TTR
-		{ variableId: 'loopControlMode', name: 'Loop Control Mode' }, // AT#LCT
-		{ variableId: 'backupCallNetwork', name: 'Backup Call Network' }, // AT#LLBC
-		{ variableId: 'backupReceiveMode', name: 'Backup Receive Mode' }, // AT#LLBR
-		{ variableId: 'dhcp', name: 'DHCP Mode' }, // AT#DHCP
-		{ variableId: 'ipAddress', name: 'IP Address' }, // AT#IP
-		{ variableId: 'ipMask', name: 'IP Mask' }, // AT#IPM
-		{ variableId: 'gateway', name: 'Gateway' }, // AT#GW
-		{ variableId: 'dns', name: 'DNS' }, // AT#DNS
-		{ variableId: 'originalCopy', name: 'Original/Copy Field' }, // AT#ORI
-		{ variableId: 'copyright', name: 'Copyright Field' }, // AT#COP
-		{ variableId: 'errorCorrection', name: 'Error Correction' }, // AT#COR
-		{ variableId: 'clockMode', name: 'Clock Mode' }, // AT#CLK
-		{ variableId: 'lineLevel', name: 'Line Level' }, // AT#LEV
-		{ variableId: 'potsSpeed', name: 'POTS Speed' }, // AT#SPD
-		{ variableId: 'dataChannelEnabled', name: 'Data Channel Enabled' }, // AT#CDA
-		{ variableId: 'dataChannelBaudRate', name: 'Data Channel Baud Rate' }, // AT#BAU
-		{ variableId: 'relayTransmission', name: 'Relay Transmission' }, // AT#REL
-		{ variableId: 'gpi1', name: 'GPI 1 State' }, // AT#GPI1
-		{ variableId: 'gpi2', name: 'GPI 2 State' }, // AT#GPI2
-		{ variableId: 'gpo1', name: 'GPO 1 State' }, // AT#GPO1
-		{ variableId: 'gpo2', name: 'GPO 2 State' }, // AT#GPO2
-		{ variableId: 'auxAudioChannel', name: 'Auxiliary Audio Channel' }, // AT#VOR
-		{ variableId: 'audioInterfaceFormat', name: 'Audio Interface Format' }, // AT#TYP
-		{ variableId: 'aesSyncMode', name: 'AES Sync Mode' }, // AT#SYNC
-		{ variableId: 'aesSamplingRate', name: 'AES Sampling Rate' }, // AT#AES
-		{ variableId: 'inputImpedance', name: 'Input Impedance' }, // AT#ZIN
-		{ variableId: 'outputLoad', name: 'Output Load' }, // AT#IMP
-		{ variableId: 'channelPanning', name: 'Channel Panning' }, // AT#CPM
-		{ variableId: 'outputSignal', name: 'Output Signal' }, // AT#OSEL
-		{ variableId: 'inputPad', name: 'Input Pad' }, // AT#PADi
-		{ variableId: 'coordinationChannelRouting', name: 'Coordination Channel Routing' }, // AT#CCRi
-		{ variableId: 'smsMessage', name: 'Last SMS Message' }, // AT#SMS
+	  this.setVariableDefinitions({
+		connectionStatus: { name: 'Connection Status' },
+		codecModel: { name: 'Codec Model' }, // From ATI response
+		'5AS': { name: '5A System Status' }, // AT#5AS
+		codingAlgorithm: { name: 'Coding Algorithm' }, // AT#COD
+		networkType: { name: 'Network Type' }, // AT#NET
+		ipQuality: { name: 'IP Quality' }, // AT#IPQ
+		packetReplication: { name: 'Packet Replication' }, // AT#REP
+		codingBitRate: { name: 'Coding Bit Rate' }, // AT#CHD
+		codingSamplingRate: { name: 'Coding Sampling Rate' }, // AT#FRE
+		maxInputLevel: { name: 'Maximum Input Level' }, // AT#GIN
+		maxOutputLevel: { name: 'Maximum Output Level' }, // AT#GOUT
+		localEcho: { name: 'Local Echo' }, // ATE
+		dialMethod: { name: 'Dial Method' }, // AT#DIA
+		dialTone: { name: 'Dial Tone' }, // AT#TON
+		incomingCallFilter: { name: 'Incoming Call Filter' }, // AT#TAE
+		proprietaryFilter: { name: 'Proprietary ISDN Filter' }, // AT#TFS
+		hlc: { name: 'HLC Enabling' }, // AT#HLC
+		autoRedial: { name: 'Auto Redial' }, // AT#RED
+		redialRetries: { name: 'Redial Retries' }, // AT#NBR
+		redialWaitTime: { name: 'Redial Wait Time' }, // AT#TTR
+		loopControlMode: { name: 'Loop Control Mode' }, // AT#LCT
+		backupCallNetwork: { name: 'Backup Call Network' }, // AT#LLBC
+		backupReceiveMode: { name: 'Backup Receive Mode' }, // AT#LLBR
+		dhcp: { name: 'DHCP Mode' }, // AT#DHCP
+		ipAddress: { name: 'IP Address' }, // AT#IP
+		ipMask: { name: 'IP Mask' }, // AT#IPM
+		gateway: { name: 'Gateway' }, // AT#GW
+		dns: { name: 'DNS' }, // AT#DNS
+		originalCopy: { name: 'Original/Copy Field' }, // AT#ORI
+		copyright: { name: 'Copyright Field' }, // AT#COP
+		errorCorrection: { name: 'Error Correction' }, // AT#COR
+		clockMode: { name: 'Clock Mode' }, // AT#CLK
+		lineLevel: { name: 'Line Level' }, // AT#LEV
+		potsSpeed: { name: 'POTS Speed' }, // AT#SPD
+		dataChannelEnabled: { name: 'Data Channel Enabled' }, // AT#CDA
+		dataChannelBaudRate: { name: 'Data Channel Baud Rate' }, // AT#BAU
+		relayTransmission: { name: 'Relay Transmission' }, // AT#REL
+		gpi1: { name: 'GPI 1 State' }, // AT#GPI1
+		gpi2: { name: 'GPI 2 State' }, // AT#GPI2
+		gpo1: { name: 'GPO 1 State' }, // AT#GPO1
+		gpo2: { name: 'GPO 2 State' }, // AT#GPO2
+		auxAudioChannel: { name: 'Auxiliary Audio Channel' }, // AT#VOR
+		audioInterfaceFormat: { name: 'Audio Interface Format' }, // AT#TYP
+		aesSyncMode: { name: 'AES Sync Mode' }, // AT#SYNC
+		aesSamplingRate: { name: 'AES Sampling Rate' }, // AT#AES
+		inputImpedance: { name: 'Input Impedance' }, // AT#ZIN
+		outputLoad: { name: 'Output Load' }, // AT#IMP
+		channelPanning: { name: 'Channel Panning' }, // AT#CPM
+		outputSignal: { name: 'Output Signal' }, // AT#OSEL
+		inputPad: { name: 'Input Pad' }, // AT#PADi
+		coordinationChannelRouting: { name: 'Coordination Channel Routing' }, // AT#CCRi
+		smsMessage: { name: 'Last SMS Message' }, // AT#SMS
 		// Audio Input Controls
-		{ variableId: 'inputGainStep1', name: 'Input 1 Gain Step' }, // AT#GIS1
-		{ variableId: 'inputGainStep2', name: 'Input 2 Gain Step' }, // AT#GIS2
-		{ variableId: 'inputGainStep3', name: 'Input 3 Gain Step' }, // AT#GIS3
-		{ variableId: 'phantomPower1', name: 'Input 1 Phantom Power' }, // AT#PWR1
-		{ variableId: 'phantomPower2', name: 'Input 2 Phantom Power' }, // AT#PWR2
-		{ variableId: 'phantomPower3', name: 'Input 3 Phantom Power' }, // AT#PWR3
-		{ variableId: 'limiter1', name: 'Input 1 Limiter' }, // AT#LIM1
-		{ variableId: 'limiter2', name: 'Input 2 Limiter' }, // AT#LIM2
-		{ variableId: 'limiter3', name: 'Input 3 Limiter' }, // AT#LIM3
+		inputGainStep1: { name: 'Input 1 Gain Step' }, // AT#GIS1
+		inputGainStep2: { name: 'Input 2 Gain Step' }, // AT#GIS2
+		inputGainStep3: { name: 'Input 3 Gain Step' }, // AT#GIS3
+		phantomPower1: { name: 'Input 1 Phantom Power' }, // AT#PWR1
+		phantomPower2: { name: 'Input 2 Phantom Power' }, // AT#PWR2
+		phantomPower3: { name: 'Input 3 Phantom Power' }, // AT#PWR3
+		limiter1: { name: 'Input 1 Limiter' }, // AT#LIM1
+		limiter2: { name: 'Input 2 Limiter' }, // AT#LIM2
+		limiter3: { name: 'Input 3 Limiter' }, // AT#LIM3
 		// Call status variables
-		{ variableId: 'ringing', name: 'Ringing Status' },
-		{ variableId: 'calling', name: 'Calling Status' },
-		{ variableId: 'established', name: 'Established Status' },
-		{ variableId: 'released', name: 'Released Status' },
-		{ variableId: 'codecStatus', name: 'Codec Status' }, // AT#SUP COD1:S=
-		{ variableId: 'incomingCall', name: 'Incoming Call' }, // AT#SUP ENT:APPEL1=
-		{ variableId: 'activeAlarms', name: 'Active Alarms' },
-		{ variableId: 'lastError', name: 'Last Error Message' },
-		{ variableId: 'audioStatus', name: 'Audio Status' },
-		{ variableId: 'jitterBuffer', name: 'Jitter Buffer Status' },
-		{ variableId: 'audioLevel', name: 'Audio Level' },
-		{ variableId: 'audioLevelTxLeft', name: 'Audio Level Tx Left' },
-		{ variableId: 'audioLevelTxRight', name: 'Audio Level Tx Right' },
-		{ variableId: 'audioLevelRxLeft', name: 'Audio Level Rx Left' },
-		{ variableId: 'audioLevelRxRight', name: 'Audio Level Rx Right' },
-		{ variableId: 'lastConnectedNumber', name: 'Last Connected Number' },
+		ringing: { name: 'Ringing Status' },
+		calling: { name: 'Calling Status' },
+		established: { name: 'Established Status' },
+		released: { name: 'Released Status' },
+		codecStatus: { name: 'Codec Status' }, // AT#SUP COD1:S=
+		incomingCall: { name: 'Incoming Call' }, // AT#SUP ENT:APPEL1=
+		activeAlarms: { name: 'Active Alarms' },
+		lastError: { name: 'Last Error Message' },
+		audioStatus: { name: 'Audio Status' },
+		jitterBuffer: { name: 'Jitter Buffer Status' },
+		audioLevel: { name: 'Audio Level' },
+		audioLevelTxLeft: { name: 'Audio Level Tx Left' },
+		audioLevelTxRight: { name: 'Audio Level Tx Right' },
+		audioLevelRxLeft: { name: 'Audio Level Rx Left' },
+		audioLevelRxRight: { name: 'Audio Level Rx Right' },
+		lastConnectedNumber: { name: 'Last Connected Number' },
 		// Dial/Location numbers (keep for compatibility)
-		{ variableId: 'number1', name: 'Dial Number 1' },
-		{ variableId: 'number2', name: 'Dial Number 2' },
-		{ variableId: 'number3', name: 'Dial Number 3' },
-		{ variableId: 'number4', name: 'Dial Number 4' },
-		{ variableId: 'number5', name: 'Dial Number 5' },
-		{ variableId: 'number6', name: 'Dial Number 6' },
-		{ variableId: 'number7', name: 'Dial Number 7' },
-		{ variableId: 'number8', name: 'Dial Number 8' },
-		{ variableId: 'location1', name: 'Local Number 1' },
-		{ variableId: 'location2', name: 'Local Number 2' },
-		{ variableId: 'location3', name: 'Local Number 3' },
-		{ variableId: 'location4', name: 'Local Number 4' },
-		{ variableId: 'location5', name: 'Local Number 5' },
-		{ variableId: 'location6', name: 'Local Number 6' },
-		{ variableId: 'location7', name: 'Local Number 7' },
-		{ variableId: 'location8', name: 'Local Number 8' },
+		number1: { name: 'Dial Number 1' },
+		number2: { name: 'Dial Number 2' },
+		number3: { name: 'Dial Number 3' },
+		number4: { name: 'Dial Number 4' },
+		number5: { name: 'Dial Number 5' },
+		number6: { name: 'Dial Number 6' },
+		number7: { name: 'Dial Number 7' },
+		number8: { name: 'Dial Number 8' },
+		location1: { name: 'Local Number 1' },
+		location2: { name: 'Local Number 2' },
+		location3: { name: 'Local Number 3' },
+		location4: { name: 'Local Number 4' },
+		location5: { name: 'Local Number 5' },
+		location6: { name: 'Local Number 6' },
+		location7: { name: 'Local Number 7' },
+		location8: { name: 'Local Number 8' },
 		// Config and alarm bytes
-		{ variableId: 'configNumber', name: 'Configuration Number' },
-		{ variableId: 'testLoop', name: 'Test Loop Status' },
-		{ variableId: 'alarmD1', name: 'Alarm Byte 1' },
-		{ variableId: 'alarmD2', name: 'Alarm Byte 2' },
-		{ variableId: 'alarmD3', name: 'Alarm Byte 3' },
-		{ variableId: 'keyPadInput', name: 'Keypad Input' }
-	  ]);
+		configNumber: { name: 'Configuration Number' },
+		testLoop: { name: 'Test Loop Status' },
+		alarmD1: { name: 'Alarm Byte 1' },
+		alarmD2: { name: 'Alarm Byte 2' },
+		alarmD3: { name: 'Alarm Byte 3' },
+		keyPadInput: { name: 'Keypad Input' }
+	  });
   
 	  this.setVariableValues({
 		connectionStatus: 'Disconnected',

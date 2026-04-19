@@ -1,4 +1,4 @@
-const { InstanceBase, InstanceStatus, runEntrypoint, TCPHelper } = require('@companion-module/base');
+const { InstanceBase, InstanceStatus, TCPHelper } = require('@companion-module/base');
 const dgram = require('dgram');
 const UpgradeScripts = require('./upgrades');
 const configFields = require('./config');
@@ -41,7 +41,8 @@ class AETAModule extends InstanceBase {
     this.init_variables();
     // Set preset definitions
     if (this.setPresetDefinitions) {
-      this.setPresetDefinitions(GetPresetsList());
+      const { structure, presets } = GetPresetsList();
+      this.setPresetDefinitions(structure, presets);
       this.log('debug', 'Preset definitions set');
     }
   }
@@ -1131,11 +1132,6 @@ class AETAModule extends InstanceBase {
   }
 }
 
-// Export the instance class and support info for proper module registration
-module.exports = {
-  moduleClass: AETAModule,
-  upgradeScripts: UpgradeScripts,
-};
-
-// Initialize the module
-runEntrypoint(module.exports.moduleClass, UpgradeScripts);
+// Export the instance class and its upgrade scripts
+module.exports = AETAModule;
+module.exports.UpgradeScripts = UpgradeScripts;

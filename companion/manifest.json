@@ -1,5 +1,6 @@
 {
 	"id": "aetaaudio-codecs",
+	"type": "connection",
 	"name": "AETA Audio Codecs",
 	"shortname": "AETA",
 	"description": "Control AETA Audio Codecs",
