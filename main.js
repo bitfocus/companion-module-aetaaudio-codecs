@@ -386,9 +386,9 @@ class AETAModule extends InstanceBase {
     }
 
     // Send command exactly as provided with no modifications
-    this.socket.send(command).catch((error) => {
+    this.socket.sendAsync(command).catch((error) => {
       this.log('error', `Failed to send command "${command}": ${error.message}`);
-      if (error.message.includes('not connected')) {
+      if (error?.message?.includes('not connected')) {
         this.feedbackState.codecConnected = false;
         this.updateStatus(InstanceStatus.ConnectionFailure);
       }
@@ -564,18 +564,18 @@ class AETAModule extends InstanceBase {
         return reject(new Error('Socket not connected'));
       }
 
-      try {
-        // Send command exactly as provided with no modifications
-        this.socket.send(command).then(() => {
+      this.socket.sendAsync(command).then((success) => {
+        if (success) {
           resolve();
-        }).catch((error) => {
-          this.log('error', `Send error: ${error.message}`);
-          reject(error);
-        });
-      } catch (error) {
+        } else {
+          const errorMsg = 'Socket data could not be sent';
+          this.log('error', `Send error: ${errorMsg}`);
+          reject(new Error(errorMsg));
+        }
+      }).catch((error) => {
         this.log('error', `Send error: ${error.message}`);
         reject(error);
-      }
+      });
     });
   }
 
