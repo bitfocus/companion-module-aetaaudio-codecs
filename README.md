@@ -183,6 +183,9 @@ Utilities folder contains reference files for developers as well as a dial pad c
  
  ## Version History
 
+ ### 2.0.0-beta
+ - Major update to support Companion API 2.0
+
  ### 1.1.2-beta
  - Fixed states are now stored as booleans
  - Fixed number/SIP field not being parsed properly
