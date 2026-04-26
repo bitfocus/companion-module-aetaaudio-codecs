@@ -155,7 +155,7 @@ module.exports = {
 				{ id: '2', label: 'G722 - H221' },
 				{ id: '4', label: 'MPEG Layer 2 (Mono)' },
 				{ id: '5', label: 'MPEG Layer 2 (Dual Mono)' },
-				{ id: '17', label: 'Opus (Mono)' },
+				{ id: '17', label: 'MPEG Layer 3 (J52 for ISDN mode) - Stereo' },
 				{ id: '50', label: 'Opus (Mono)' },
 				{ id: '51', label: 'Opus (Stereo)' },
 			  ],
@@ -402,7 +402,7 @@ module.exports = {
 				  'AT#FRE=0',       // 32kHz sampling
 				],
 				mobile: [
-				  'AT#COD1=17',     // Opus Mono
+				  'AT#COD1=50',     // Opus Mono
 				  'AT#CHD1=1',      // 32 kbps
 				  'AT#FRE=0',       // 32kHz sampling
 				]
