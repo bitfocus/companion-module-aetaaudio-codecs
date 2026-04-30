@@ -215,6 +215,9 @@ The module includes comprehensive error handling:
 
 ## Version History
 
+### Version 2.1.0-beta
+* Added model filtering to actions and variables
+
 ### Version 2.0.0-beta
 * Major update to support Companion API 2.0
 

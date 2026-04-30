@@ -183,6 +183,9 @@ Utilities folder contains reference files for developers as well as a dial pad c
  
  ## Version History
 
+ ### 2.1.0-beta
+ - Added model filtering to actions and variables
+
  ### 2.0.0-beta
  - Major update to support Companion API 2.0
 
