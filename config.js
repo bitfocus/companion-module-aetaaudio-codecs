@@ -2,6 +2,23 @@ const { Regex } = require('@companion-module/base');
 
 module.exports = [
   {
+    type: 'dropdown',
+    id: 'model',
+    label: 'Codec Model',
+    tooltip: 'Select a specific model to filter available actions and variables, or select "All models" to show everything.',
+    default: 'auto',
+    choices: [
+      { id: 'auto', label: 'All models' },
+      { id: 'HS3', label: 'HIFISCOOP 3 5AS (HS3)' },
+      { id: 'S3', label: 'SCOOP 3 5AS (S3)' },
+      { id: 'S4', label: 'SCOOP 4+ (S4)' },
+      { id: 'S+', label: 'SCOOPY+ (S+)' },
+      { id: 'S5', label: 'SCOOP 5 / SCOOP 5 IP (S5)' },
+      { id: 'SxS', label: 'Scoop5 S / Scoop5 S-IP / Scoopy+ S (SxS)' }
+    ],
+    width: 6,
+  },
+  {
     type: 'textinput',
     id: 'ip',
     label: 'Target IP',

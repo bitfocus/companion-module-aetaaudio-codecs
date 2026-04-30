@@ -1,6 +1,6 @@
 module.exports = {
   getActionDefinitions(instance) {
-	return {
+	const actions = {
 	  keypad: {
 		name: 'Keypad',
 		description: 'Store a concatenated value into keyPadInput to simulate dial pad.',
@@ -214,6 +214,7 @@ module.exports = {
 		setIPQuality: {
 		  name: 'Set IP Quality',
 		  description: 'Set the IP network quality parameter for the codec.',
+		  models: ['S4', 'S5', 'S+', 'SxS'],
 		  options: [
 			{
 			  type: 'dropdown',
@@ -248,6 +249,7 @@ module.exports = {
 		setPacketReplication: {
 		  name: 'Set Packet Replication',
 		  description: 'Configure the packet replication feature for IP transmission.',
+		  models: ['S+', 'S5', 'SxS'],
 		  options: [
 			{
 			  type: 'dropdown',
@@ -482,7 +484,8 @@ module.exports = {
 		  setDHCPMode: {
 			name: 'Set DHCP Mode',
 			description: 'Switch between DHCP (automatic) and static IP addressing.',
-			options: [
+			models: ['S4', 'S5', 'S+', 'SxS'],
+		  options: [
 			  {
 				type: 'dropdown',
 				label: 'DHCP Mode',
@@ -508,7 +511,8 @@ module.exports = {
 		  setIPAddress: {
 			name: 'Set IP Address',
 			description: 'Set the static IP address for the device.',
-			options: [
+			models: ['S4', 'S5', 'S+', 'SxS'],
+		  options: [
 			  {
 				type: 'textinput',
 				label: 'IP Address',
@@ -532,7 +536,8 @@ module.exports = {
 		  setDNSAddress: {
 			name: 'Set DNS Address',
 			description: 'Set the DNS server address for the device.',
-			options: [
+			models: ['S4', 'S5', 'S+', 'SxS'],
+		  options: [
 			  {
 				type: 'textinput',
 				label: 'DNS Address',
@@ -556,7 +561,8 @@ module.exports = {
 		  setGateway: {
 			name: 'Set Gateway',
 			description: 'Set the default gateway address for the device.',
-			options: [
+			models: ['S4', 'S5', 'S+', 'SxS'],
+		  options: [
 			  {
 				type: 'textinput',
 				label: 'Gateway Address',
@@ -580,7 +586,8 @@ module.exports = {
 		  setSubnetMask: {
 			name: 'Set Subnet Mask',
 			description: 'Set the subnet mask for the device network interface.',
-			options: [
+			models: ['S4', 'S5', 'S+', 'SxS'],
+		  options: [
 			  {
 				type: 'textinput',
 				label: 'Subnet Mask',
@@ -630,7 +637,8 @@ module.exports = {
 		  setDialMethod: {
 			name: 'Set Dial Method',
 			description: 'Select the dialing method (tone or pulse) for outgoing calls.',
-			options: [
+			models: ['S+', 'S4', 'S5', 'SxS'],
+		  options: [
 			  {
 				type: 'dropdown',
 				label: 'Dial Method',
@@ -656,7 +664,8 @@ module.exports = {
 		  setDialTone: {
 			name: 'Set Dial Tone',
 			description: 'Configure whether to wait for a dial tone before dialing.',
-			options: [
+			models: ['S+', 'S4', 'S5', 'SxS'],
+		  options: [
 			  {
 				type: 'dropdown',
 				label: 'Dial Tone',
@@ -709,7 +718,8 @@ module.exports = {
 		  setProprietaryFilter: {
 			name: 'Set Proprietary ISDN Filter',
 			description: 'Enable or disable proprietary ISDN call filtering mode.',
-			options: [
+			models: ['HS3', 'S3'],
+		  options: [
 			  {
 				type: 'dropdown',
 				label: 'Proprietary Filtering Mode',
@@ -735,7 +745,8 @@ module.exports = {
 		  setHLC: {
 			name: 'Set High Layer Capability (HLC)',
 			description: 'Enable or disable HLC encoding for ISDN calls.',
-			options: [
+			models: ['HS3', 'S3'],
+		  options: [
 			  {
 				type: 'dropdown',
 				label: 'HLC Encoding',
@@ -761,7 +772,8 @@ module.exports = {
 		  setAutoRedial: {
 			name: 'Set Auto Redial',
 			description: 'Enable or disable automatic redial for the selected codec.',
-			options: [
+			models: ['S4', 'S5', 'S+', 'SxS'],
+		  options: [
 			  {
 				type: 'dropdown',
 				label: 'Codec',
@@ -797,7 +809,8 @@ module.exports = {
 		  setInputGainStep: {
 			name: 'Set Input Gain Step',
 			description: 'Set the input gain step (Mic/Line level).',
-			options: [
+			models: ['S+', 'SxS'],
+		  options: [
 			  {
 				type: 'dropdown',
 				label: 'Channel',
@@ -1500,7 +1513,8 @@ module.exports = {
 		  setInputImpedance: {
 			name: 'Set Input Impedance',
 			description: 'Set the input impedance for the analogue audio input.',
-			options: [
+			models: ['S4', 'S5', 'SxS'],
+		  options: [
 			  {
 				type: 'dropdown',
 				label: 'Input Impedance',
@@ -1526,7 +1540,8 @@ module.exports = {
 		  setOutputLoad: {
 			name: 'Set Output Load',
 			description: 'Set the output load impedance for the analogue audio output.',
-			options: [
+			models: ['HS3', 'S3'],
+		  options: [
 			  {
 				type: 'dropdown',
 				label: 'Output Load',
@@ -1552,7 +1567,8 @@ module.exports = {
 		  setChannelPanning: {
 			name: 'Set Channel Panning Mode',
 			description: 'Set the panning mode for stereo channels.',
-			options: [
+			models: ['S+', 'SxS'],
+		  options: [
 			  {
 				type: 'dropdown',
 				label: 'Panning Mode',
@@ -1578,7 +1594,8 @@ module.exports = {
 		  setOutputSignal: {
 			name: 'Set Output Signal Selection',
 			description: 'Select the output signal routing (send, receive, or mix).',
-			options: [
+			models: ['S+', 'SxS'],
+		  options: [
 			  {
 				type: 'dropdown',
 				label: 'Output Signal',
@@ -1605,7 +1622,8 @@ module.exports = {
 		  setInputPad: {
 			name: 'Set Input Attenuation Pad',
 			description: 'Enable or disable the input attenuation pad for the specified channel.',
-			options: [
+			models: ['S+', 'SxS'],
+		  options: [
 			  {
 				type: 'dropdown',
 				label: 'Channel',
@@ -1640,7 +1658,8 @@ module.exports = {
 		  setHeadphoneRouting: {
 			name: 'Set Headphone Coordination Channel Routing',
 			description: 'Configure routing of the coordination channel to headphone outputs.',
-			options: [
+			models: ['S+', 'SxS'],
+		  options: [
 			  {
 				type: 'dropdown',
 				label: 'Headphone Output',
@@ -1675,5 +1694,16 @@ module.exports = {
 			}
 		  },
 	  };
+
+	  const selectedModel = instance.config.model || 'auto';
+	  const filteredActions = {};
+	  
+	  for (const [id, action] of Object.entries(actions)) {
+		if (selectedModel === 'auto' || !action.models || action.models.includes(selectedModel)) {
+		  filteredActions[id] = action;
+		}
+	  }
+	  
+	  return filteredActions;
 	},
   };

@@ -192,6 +192,12 @@ class AETAModule extends InstanceBase {
 
       // Update config BEFORE creating new connection
       this.config = config;
+      
+      // Re-initialize dynamic definitions based on new config (e.g. model change)
+      this.init_actions();
+      this.init_feedbacks();
+      this.init_variables();
+
       this.log('debug', `Updated config, initializing connection to ${this.config.ip}:${this.config.port}`);
 
       // Reset feedback states
