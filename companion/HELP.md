@@ -229,6 +229,13 @@ The module includes comprehensive error handling:
 
 ## Version History
 
+### Version 2.2.0-beta
+
+- Upgraded to Bitfocus Companion API 2.1 (Companion 5.0+)
+- Added layered button presets with real-time audio level gauges for stereo and mono Tx/Rx monitoring
+- Implemented preset alternatives providing both rich layered gauges and simple fallback styles
+- Fixed button presets images
+
 ### Version 2.1.0-beta
 
 - Added model filtering to actions and variables
